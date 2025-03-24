@@ -1,0 +1,23 @@
+[
+    {
+      "id": 1,
+      "name": "Ljubljana Medical Center",
+      "lat": 46.0569,
+      "lng": 14.5058,
+      "address": "Zalo\u0161ka cesta 7, 1000 Ljubljana"
+    },
+    {
+      "id": 2,
+      "name": "Maribor Health Clinic",
+      "lat": 46.5547,
+      "lng": 15.6467,
+      "address": "Ljubljanska ulica 5, 2000 Maribor"
+    },
+    {
+      "id": 3,
+      "name": "Koper Regional Hospital",
+      "lat": 45.5469,
+      "lng": 13.7294,
+      "address": "Polje 40, 6310 Izola"
+    }
+  ]
