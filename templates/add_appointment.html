@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj termin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Appointment Scheduler</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="{{ url_for('health_record', patient_id=patient_id) }}">Nazad na karton</a>
+                <a class="nav-link" href="{{ url_for('hospitals_map') }}">Mapa bolnica</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h1>Dodaj termin za pacijenta {{ patient_id }}</h1>
+        <form method="POST" class="card p-4">
+            <div class="mb-3">
+                <label class="form-label">Datum:</label>
+                <input type="text" name="date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Vreme:</label>
+                <input type="text" name="time" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Razlog:</label>
+                <input type="text" name="reason" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Lekar:</label>
+                <select name="doctor_id" class="form-select" required>
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.id }}">{{ doctor.name }} ({{ doctor.specialty }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Bolnica:</label>
+                <select name="hospital_id" class="form-select" required>
+                    {% for hospital in hospitals %}
+                    <option value="{{ hospital.id }}">{{ hospital.name }}, {{ hospital.city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Sačuvaj</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
