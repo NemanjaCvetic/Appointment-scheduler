@@ -129,8 +129,7 @@ def health_record():
 @app.route('/add-patient', methods=['GET', 'POST'])
 @login_required
 def add_patient():
-    if current_user.role != 'admin':
-        return "Access denied", 403
+    
     if request.method == 'POST':
         # Pronalazimo maksimalni ID u tabeli patients i dodajemo 1
         max_id_response = supabase.table('patients').select('id').order('id', desc=True).limit(1).execute()
@@ -154,8 +153,7 @@ def add_patient():
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
 def add_appointment(patient_id):
-    if current_user.role not in ['doctor', 'admin']:
-        return "Access denied", 403
+   
     if request.method == 'POST':
         data = {
             'patient_id': patient_id,
