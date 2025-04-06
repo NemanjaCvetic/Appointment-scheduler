@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Zdravstveni karton</title>
+    <title>Health Record</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -10,35 +10,35 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">Appointment Scheduler</a>
             <div class="navbar-nav">
-                <a class="nav-link" href="{{ url_for('index') }}">Mapa bolnica</a>
-                <a class="nav-link" href="{{ url_for('health_record') }}">Moj karton/Termini</a>
+                <a class="nav-link" href="{{ url_for('index') }}">Hospital Map</a>
+                <a class="nav-link" href="{{ url_for('health_record') }}">My Record/Appointments</a>
                 {% if current_user.role == 'admin' %}
-                <a class="nav-link" href="{{ url_for('add_patient') }}">Dodaj pacijenta</a>
+                <a class="nav-link" href="{{ url_for('add_patient') }}">Add Patient</a>
                 {% endif %}
-                <a class="nav-link" href="{{ url_for('logout') }}">Odjavi se</a>
+                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
             </div>
         </div>
     </nav>
     <div class="container mt-5">
         {% if patient %}
-        <h1>Zdravstveni karton: {{ patient.name }}</h1>
-        <p><strong>Datum rođenja:</strong> {{ patient.dob }}</p>
-        <p><strong>Pol:</strong> {{ patient.gender }}</p>
-        <p><strong>Medicinska istorija:</strong> {{ patient.medical_history }}</p>
+        <h1>Health Record: {{ patient.name }}</h1>
+        <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
+        <p><strong>Gender:</strong> {{ patient.gender }}</p>
+        <p><strong>Medical History:</strong> {{ patient.medical_history }}</p>
         {% endif %}
-        <h2>Termini</h2>
+        <h2>Appointments</h2>
         <table class="table">
             <thead>
                 <tr>
                     {% if current_user.role == 'doctor' %}
-                    <th>Pacijent</th>
+                    <th>Patient</th>
                     {% else %}
-                    <th>Doktor</th>
+                    <th>Doctor</th>
                     {% endif %}
-                    <th>Datum</th>
-                    <th>Vreme</th>
-                    <th>Razlog</th>
-                    <th>Bolnica</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Reason</th>
+                    <th>Hospital</th>
                 </tr>
             </thead>
             <tbody>

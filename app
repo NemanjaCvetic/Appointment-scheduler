@@ -75,7 +75,7 @@ def login():
             login_user(user)
             return redirect(url_for('index'))
         else:
-            flash('Pogrešni podaci za prijavu')
+            flash('Invalid login credentials')
     return render_template('login.html')
 
 # Logout ruta
@@ -122,15 +122,15 @@ def health_record():
         return render_template('admin_view.html', patients=patients, appointments=appointments)
 
     if current_user.role != 'admin' and not patient and not appointments:
-        return "Podaci nisu pronađeni", 404
+        return "Data not found", 404
     return render_template('health_record.html', patient=patient, appointments=appointments)
 
 # Dodavanje pacijenta (samo admin)
 @app.route('/add-patient', methods=['GET', 'POST'])
 @login_required
 def add_patient():
-    if current_user.role != 'admin':
-        return "Pristup zabranjen", 403
+    if current_user.role != 'doctor':
+        return "Access denied", 403
     if request.method == 'POST':
         name = request.form['name']
         data = {
@@ -146,11 +146,12 @@ def add_patient():
         return redirect(url_for('health_record'))
     return render_template('add_patient.html')
 
-# Dodavanje termina (samo doktor ili admin)
+# Dodavanje termina 
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
 def add_appointment(patient_id):
-    
+    if current_user.role not in ['doctor', 'admin']:
+        return "Access denied", 403
     if request.method == 'POST':
         data = {
             'patient_id': patient_id,

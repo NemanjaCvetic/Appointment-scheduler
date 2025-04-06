@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Appointment Scheduler</title>
@@ -35,31 +35,31 @@
             <a class="navbar-brand" href="{{ url_for('index') }}">Appointment Scheduler</a>
             <div class="navbar-nav">
                 {% if current_user.is_authenticated %}
-                <a class="nav-link" href="{{ url_for('health_record') }}">Moj karton/Termini</a>
-                {% if current_user.role == 'admin' %}
-                <a class="nav-link" href="{{ url_for('add_patient') }}">Dodaj pacijenta</a>
+                <a class="nav-link" href="{{ url_for('health_record') }}">My Record/Appointments</a>
+                {% if current_user.role == 'doctor' %}
+                <a class="nav-link" href="{{ url_for('add_patient') }}">Add Patient</a>
                 {% endif %}
-                <a class="nav-link" href="{{ url_for('logout') }}">Odjavi se</a>
+                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
                 {% else %}
-                <a class="nav-link" href="{{ url_for('login') }}">Prijavi se</a>
+                <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
                 {% endif %}
             </div>
         </div>
     </nav>
     <div class="container mt-4">
-        <h1>Dobrodošli u Appointment Scheduler</h1>
-        <p>Pogledajte lokacije zdravstvenih ustanova na mapi ispod i zakazujte termine:</p>
+        <h1>Welcome to Appointment Scheduler</h1>
+        <p>View the locations of healthcare facilities on the map below and schedule appointments:</p>
         <div id="map"></div>
         <div id="hospital-details" class="card" style="display: none;">
             <div class="card-body">
                 <h3 id="hospital-name"></h3>
-                <p><strong>Adresa:</strong> <span id="hospital-address"></span></p>
-                <p><strong>Ordinacije:</strong> <span id="hospital-specialties"></span></p>
-                <p><strong>Doktori:</strong> <span id="hospital-doctors"></span></p>
+                <p><strong>Address:</strong> <span id="hospital-address"></span></p>
+                <p><strong>Specialties:</strong> <span id="hospital-specialties"></span></p>
+                <p><strong>Doctors:</strong> <span id="hospital-doctors"></span></p>
                 {% if current_user.is_authenticated and current_user.role in ['doctor', 'admin', 'patient'] %}
-                <a id="schedule-btn" href="#" class="btn btn-primary schedule-btn">Zakazi termin</a>
+                <a id="schedule-btn" href="#" class="btn btn-primary schedule-btn">Schedule Appointment</a>
                 {% else %}
-                <p><small>Prijavite se da biste zakazali termin.</small></p>
+                <p><small>Please log in to schedule an appointment.</small></p>
                 {% endif %}
             </div>
         </div>
@@ -100,8 +100,8 @@
                 // Filtriranje doktora po hospital_id
                 var hospitalDoctors = doctors.filter(d => d.hospital_id === hospital.id);
                 var specialtySet = new Set(hospitalDoctors.map(d => d.specialty));
-                specialties.textContent = Array.from(specialtySet).join(', ') || 'Nema dostupnih ordinacija';
-                doctorsList.textContent = hospitalDoctors.map(d => d.name).join(', ') || 'Nema dostupnih doktora';
+                specialties.textContent = Array.from(specialtySet).join(', ') || 'No specialties available';
+                doctorsList.textContent = hospitalDoctors.map(d => d.name).join(', ') || 'No doctors available';
 
                 // Povezivanje dugmeta za zakazivanje
                 if (scheduleBtn) {

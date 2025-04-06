@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Prijava</title>
+    <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -10,12 +10,12 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">Appointment Scheduler</a>
             <div class="navbar-nav">
-                <a class="nav-link" href="{{ url_for('index') }}">Mapa bolnica</a>
+                <a class="nav-link" href="{{ url_for('index') }}">Hospital Map</a>
             </div>
         </div>
     </nav>
     <div class="container mt-5">
-        <h1>Prijava</h1>
+        <h1>Login</h1>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="alert alert-danger">{{ messages[0] }}</div>
@@ -23,22 +23,22 @@
         {% endwith %}
         <form method="POST" class="card p-4">
             <div class="mb-3">
-                <label class="form-label">Uloga:</label>
+                <label class="form-label">Role:</label>
                 <select name="role" class="form-select" required>
-                    <option value="patient">Pacijent</option>
-                    <option value="doctor">Doktor</option>
+                    <option value="patient">Patient</option>
+                    <option value="doctor">Doctor</option>
                     <option value="admin">Admin</option>
                 </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">Email (ime.prezime@gmail.com):</label>
+                <label class="form-label">Email (first.last@gmail.com):</label>
                 <input type="email" name="email" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label class="form-label">Lozinka (ime malim slovima):</label>
+                <label class="form-label">Password (first name in lowercase):</label>
                 <input type="password" name="password" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-primary">Prijavi se</button>
+            <button type="submit" class="btn btn-primary">Log In</button>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
