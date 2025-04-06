@@ -121,8 +121,8 @@ def add_patient():
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
 def add_appointment(patient_id):
-    if current_user.role not in ['doctor', 'admin']:
-        return "Pristup zabranjen", 403
+    #if current_user.role not in ['doctor', 'admin']:
+        #return "Pristup zabranjen", 403
     if request.method == 'POST':
         data = {
             'patient_id': patient_id,

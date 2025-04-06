@@ -10,41 +10,48 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">Appointment Scheduler</a>
             <div class="navbar-nav">
+                <a class="nav-link" href="{{ url_for('index') }}">Mapa bolnica</a>
+                <a class="nav-link" href="{{ url_for('health_record') }}">Moj karton/Termini</a>
+                {% if current_user.role == 'admin' %}
                 <a class="nav-link" href="{{ url_for('add_patient') }}">Dodaj pacijenta</a>
-                <a class="nav-link" href="{{ url_for('add_appointment', patient_id=patient.id) }}">Dodaj termin</a>
-                <a class="nav-link" href="{{ url_for('hospitals_map') }}">Mapa bolnica</a>
+                {% endif %}
+                <a class="nav-link" href="{{ url_for('logout') }}">Odjavi se</a>
             </div>
         </div>
     </nav>
-    <div class="container mt-4">
-        <h1>Zdravstveni karton</h1>
-        <div class="card mb-4">
-            <div class="card-body">
-                <h2>{{ patient.name }}</h2>
-                <p><strong>ID:</strong> {{ patient.id }}</p>
-                <p><strong>Datum rođenja:</strong> {{ patient.dob }}</p>
-                <p><strong>Pol:</strong> {{ patient.gender }}</p>
-                <p><strong>Medicinska istorija:</strong> {{ patient.medical_history }}</p>
-            </div>
-        </div>
-        <h3>Istorija termina</h3>
-        <table class="table table-striped">
+    <div class="container mt-5">
+        {% if patient %}
+        <h1>Zdravstveni karton: {{ patient.name }}</h1>
+        <p><strong>Datum rođenja:</strong> {{ patient.dob }}</p>
+        <p><strong>Pol:</strong> {{ patient.gender }}</p>
+        <p><strong>Medicinska istorija:</strong> {{ patient.medical_history }}</p>
+        {% endif %}
+        <h2>Termini</h2>
+        <table class="table">
             <thead>
                 <tr>
+                    {% if current_user.role == 'doctor' %}
+                    <th>Pacijent</th>
+                    {% else %}
+                    <th>Doktor</th>
+                    {% endif %}
                     <th>Datum</th>
                     <th>Vreme</th>
                     <th>Razlog</th>
-                    <th>Lekar</th>
                     <th>Bolnica</th>
                 </tr>
             </thead>
             <tbody>
                 {% for appointment in appointments %}
                 <tr>
+                    {% if current_user.role == 'doctor' %}
+                    <td>{{ appointment.patients.name }}</td>
+                    {% else %}
+                    <td>{{ appointment.doctors.name }} ({{ appointment.doctors.specialty }})</td>
+                    {% endif %}
                     <td>{{ appointment.date }}</td>
                     <td>{{ appointment.time }}</td>
                     <td>{{ appointment.reason }}</td>
-                    <td>{{ appointment.doctors.name }} ({{ appointment.doctors.specialty }})</td>
                     <td>{{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</td>
                 </tr>
                 {% endfor %}
