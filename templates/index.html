@@ -74,6 +74,10 @@
         var hospitals = {{ hospitals|tojson|safe }};
         var doctors = {{ doctors|tojson|safe }};
 
+        // Logovanje za debagovanje
+        console.log("Hospitals:", hospitals);
+        console.log("Doctors:", doctors);
+
         // Provera da li su podaci validni, ako ne, postavi prazne nizove
         if (!Array.isArray(hospitals)) hospitals = [];
         if (!Array.isArray(doctors)) doctors = [];
@@ -101,7 +105,7 @@
 
                 // Povezivanje dugmeta za zakazivanje
                 if (scheduleBtn) {
-                    scheduleBtn.href = "{{ url_for('add_appointment', patient_id=(current_user.entity_id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}".replace('1', hospital.id);
+                    scheduleBtn.href = "{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}".replace('1', hospital.id);
                 }
 
                 details.style.display = 'block';

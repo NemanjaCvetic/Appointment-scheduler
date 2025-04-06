@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from supabase import create_client, Client
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
@@ -16,18 +16,28 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 class User(UserMixin):
-    def __init__(self, id, role, email, entity_id):
+    def __init__(self, id, role, email):
         self.id = id
         self.role = role
         self.email = email
-        self.entity_id = entity_id
 
 @login_manager.user_loader
 def load_user(user_id):
-    response = supabase.table('users').select('id, role, email, entity_id').eq('id', user_id).execute()
-    if response.data:
-        user_data = response.data[0]
-        return User(user_data['id'], user_data['role'], user_data['email'], user_data['entity_id'])
+    # Uzimamo role iz sesije
+    role = session.get('user_role')
+    
+    if role == 'patient':
+        patient_response = supabase.table('patients').select('id, email').eq('id', user_id).execute()
+        if patient_response.data:
+            return User(patient_response.data[0]['id'], role, patient_response.data[0]['email'])
+    elif role == 'doctor':
+        doctor_response = supabase.table('doctors').select('id, email').eq('id', user_id).execute()
+        if doctor_response.data:
+            return User(doctor_response.data[0]['id'], role, doctor_response.data[0]['email'])
+    elif role == 'admin':
+        if user_id == 'admin':
+            return User('admin', 'admin', 'admin@gmail.com')
+    
     return None
 
 # Login ruta
@@ -38,16 +48,30 @@ def login():
         email = request.form['email']
         password = request.form['password']
         
-        user_response = supabase.table('users')\
-            .select('id, role, email, entity_id')\
-            .eq('role', role)\
-            .eq('email', email)\
-            .eq('password', password)\
-            .execute()
+        if role == 'patient':
+            response = supabase.table('patients')\
+                .select('id, email')\
+                .eq('email', email)\
+                .eq('password', password)\
+                .execute()
+        elif role == 'doctor':
+            response = supabase.table('doctors')\
+                .select('id, email')\
+                .eq('email', email)\
+                .eq('password', password)\
+                .execute()
+        else:  # admin
+            if email == 'admin@gmail.com' and password == 'admin':
+                user = User('admin', 'admin', 'admin@gmail.com')
+                session['user_role'] = 'admin'  # Čuvamo role u sesiji
+                login_user(user)
+                return redirect(url_for('index'))
+            response = None
         
-        if user_response.data:
-            user_data = user_response.data[0]
-            user = User(user_data['id'], user_data['role'], user_data['email'], user_data['entity_id'])
+        if response and response.data:
+            user_data = response.data[0]
+            user = User(user_data['id'], role, user_data['email'])
+            session['user_role'] = role  # Čuvamo role u sesiji
             login_user(user)
             return redirect(url_for('index'))
         else:
@@ -58,6 +82,7 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    session.pop('user_role', None)  # Brišemo role iz sesije
     logout_user()
     return redirect(url_for('index'))
 
@@ -75,7 +100,7 @@ def index():
 @login_required
 def health_record():
     if current_user.role == 'patient':
-        patient_id = current_user.entity_id
+        patient_id = current_user.id
         patient_response = supabase.table('patients').select('*').eq('id', patient_id).execute()
         patient = patient_response.data[0] if patient_response.data else None
         appointments_response = supabase.table('appointments')\
@@ -83,12 +108,13 @@ def health_record():
             .eq('patient_id', patient_id).execute()
         appointments = appointments_response.data
     elif current_user.role == 'doctor':
+        doctor_id = current_user.id
         appointments_response = supabase.table('appointments')\
             .select('patients(name), date, time, reason, hospitals(name, city)')\
-            .eq('doctor_id', current_user.entity_id).execute()
+            .eq('doctor_id', doctor_id).execute()
         appointments = appointments_response.data
         patient = None
-    elif current_user.role == 'admin':
+    else:  # admin
         patients = supabase.table('patients').select('*').execute().data
         appointments = supabase.table('appointments')\
             .select('patients(name), doctors(name, specialty), hospitals(name, city), date, time, reason')\
@@ -106,12 +132,15 @@ def add_patient():
     if current_user.role != 'admin':
         return "Pristup zabranjen", 403
     if request.method == 'POST':
+        name = request.form['name']
         data = {
             'id': int(request.form['id']),
-            'name': request.form['name'],
+            'name': name,
             'dob': request.form['dob'],
             'gender': request.form['gender'],
-            'medical_history': request.form['medical_history']
+            'medical_history': request.form['medical_history'],
+            'email': f"{name.lower().replace(' ', '.')}@gmail.com",
+            'password': name.split(' ')[0].lower()
         }
         supabase.table('patients').insert(data).execute()
         return redirect(url_for('health_record'))
@@ -121,8 +150,7 @@ def add_patient():
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
 def add_appointment(patient_id):
-    #if current_user.role not in ['doctor', 'admin']:
-        #return "Pristup zabranjen", 403
+    
     if request.method == 'POST':
         data = {
             'patient_id': patient_id,
