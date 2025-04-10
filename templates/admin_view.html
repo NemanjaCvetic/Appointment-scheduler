@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Health Record</title>
+    <title>Admin Overview</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -12,63 +12,61 @@
             <div class="navbar-nav">
                 <a class="nav-link" href="{{ url_for('index') }}">Hospital Map</a>
                 <a class="nav-link" href="{{ url_for('health_record') }}">My Record/Appointments</a>
-                
                 <a class="nav-link" href="{{ url_for('add_patient') }}">Add Patient</a>
-                
                 <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
             </div>
         </div>
     </nav>
     <div class="container mt-5">
-        {% if patient %}
-        <h1>Health Record: {{ patient.name }}</h1>
-        <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
-        <p><strong>Gender:</strong> {{ patient.gender }}</p>
-        <p><strong>Medical History:</strong> {{ patient.medical_history }}</p>
-        {% endif %}
+        <h1>Admin Overview</h1>
+        <h2>Patients</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Gender</th>
+                    <th>Medical History</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.id }}</td>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.dob }}</td>
+                    <td>{{ patient.gender }}</td>
+                    <td>{{ patient.medical_history }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         <h2>Appointments</h2>
         <table class="table">
             <thead>
                 <tr>
-                    {% if current_user.role == 'doctor' %}
                     <th>Patient</th>
-                    {% else %}
                     <th>Doctor</th>
-                    {% endif %}
+                    <th>Hospital</th>
                     <th>Date</th>
                     <th>Time</th>
                     <th>Reason</th>
-                    <th>Hospital</th>
-                    {% if current_user.role != 'doctor' %}
                     <th>Findings</th>
                     <th>Status</th>
-                    {% endif %}
-                    {% if current_user.role == 'doctor' %}
-                    <th>Action</th>
-                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for appointment in appointments %}
                 <tr>
-                    {% if current_user.role == 'doctor' %}
                     <td>{{ appointment.patients.name }}</td>
-                    {% else %}
                     <td>{{ appointment.doctors.name }} ({{ appointment.doctors.specialty }})</td>
-                    {% endif %}
+                    <td>{{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</td>
                     <td>{{ appointment.date }}</td>
                     <td>{{ appointment.time }}</td>
                     <td>{{ appointment.reason }}</td>
-                    <td>{{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</td>
-                    {% if current_user.role != 'doctor' %}
                     <td>{{ appointment.findings or 'Not yet provided' }}</td>
                     <td>{{ 'Completed' if appointment.is_completed else 'Pending' }}</td>
-                    {% endif %}
-                    {% if current_user.role == 'doctor' %}
-                    <td>
-                        <a href="{{ url_for('add_findings', appointment_id=appointment.id) }}" class="btn btn-sm btn-primary">Add Findings</a>
-                    </td>
-                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -76,4 +74,4 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html> 

@@ -104,20 +104,22 @@ def health_record():
         patient_response = supabase.table('patients').select('*').eq('id', patient_id).execute()
         patient = patient_response.data[0] if patient_response.data else None
         appointments_response = supabase.table('appointments')\
-            .select('date, time, reason, doctors(name, specialty), hospitals(name, city)')\
+            .select('id, date, time, reason, findings, is_completed, doctors(name, specialty), hospitals(name, city)')\
             .eq('patient_id', patient_id).execute()
         appointments = appointments_response.data
     elif current_user.role == 'doctor':
         doctor_id = current_user.id
         appointments_response = supabase.table('appointments')\
-            .select('patients(name), date, time, reason, hospitals(name, city)')\
-            .eq('doctor_id', doctor_id).execute()
+            .select('id, patients(name), date, time, reason, findings, is_completed, hospitals(name, city)')\
+            .eq('doctor_id', doctor_id)\
+            .eq('is_completed', False)\
+            .execute()
         appointments = appointments_response.data
         patient = None
     else:  # admin
         patients = supabase.table('patients').select('*').execute().data
         appointments = supabase.table('appointments')\
-            .select('patients(name), doctors(name, specialty), hospitals(name, city), date, time, reason')\
+            .select('id, patients(name), doctors(name, specialty), hospitals(name, city), date, time, reason, findings, is_completed')\
             .execute().data
         return render_template('admin_view.html', patients=patients, appointments=appointments)
 
@@ -153,7 +155,7 @@ def add_patient():
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
 def add_appointment(patient_id):
-   
+    
     if request.method == 'POST':
         data = {
             'patient_id': patient_id,
@@ -168,6 +170,32 @@ def add_appointment(patient_id):
     doctors = supabase.table('doctors').select('id, name, specialty').execute().data
     hospitals = supabase.table('hospitals').select('id, name, city').execute().data
     return render_template('add_appointment.html', patient_id=patient_id, doctors=doctors, hospitals=hospitals)
+
+# Nova ruta za unos nalaza i označavanje pregleda kao završenog
+@app.route('/add-findings/<int:appointment_id>', methods=['GET', 'POST'])
+@login_required
+def add_findings(appointment_id):
+    if current_user.role != 'doctor':
+        return "Access denied", 403
+    
+    if request.method == 'POST':
+        findings = request.form['findings']
+        # Ažuriramo appointment sa nalazima i označavamo kao završen
+        supabase.table('appointments')\
+            .update({'findings': findings, 'is_completed': True})\
+            .eq('id', appointment_id)\
+            .execute()
+        return redirect(url_for('health_record'))
+    
+    # Pronalazimo appointment za prikaz informacija
+    appointment_response = supabase.table('appointments')\
+        .select('id, patients(name), date, time, reason, hospitals(name, city)')\
+        .eq('id', appointment_id)\
+        .execute()
+    if not appointment_response.data:
+        return "Appointment not found", 404
+    appointment = appointment_response.data[0]
+    return render_template('add_findings.html', appointment=appointment)
 
 if __name__ == '__main__':
     app.run(debug=True)
