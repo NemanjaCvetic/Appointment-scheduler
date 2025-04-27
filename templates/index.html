@@ -6,20 +6,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #map { height: 500px; }
+        #map-container{
+
+            width: 100%;
+            margin: auto;
+        }
+        #map { height: 500px;
+        
+            max-width: 50%;
+            border-radius: 10px;
+            margin-right: 20px;
+            margin-top: 20px;
+            float: left;
+            
+        }
+
         #hospital-details {
             margin-top: 20px;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 1.5vw;
+            float: left;
+            
+
         }
         #hospital-details h3 {
             color: #007bff;
             margin-bottom: 15px;
+            font-size: 2.5vw;
+            
         }
         #hospital-details p {
             margin: 10px 0;
-            font-size: 1.1em;
+            
         }
         #hospital-details strong {
             color: #333;
@@ -27,6 +47,7 @@
         .schedule-btn {
             margin-top: 15px;
         }
+       
     </style>
 </head>
 <body>
@@ -44,23 +65,29 @@
             </div>
         </div>
     </nav>
-    <div class="container mt-4">
+    <div class="container mt-4" id="map-container">
         <h1>Welcome to Appointment Scheduler</h1>
         <p>View the locations of healthcare facilities on the map below and schedule appointments:</p>
-        <div id="map"></div>
-        <div id="hospital-details" class="card" style="display: none;">
-            <div class="card-body">
-                <h3 id="hospital-name"></h3>
-                <p><strong>Address:</strong> <span id="hospital-address"></span></p>
-                <p><strong>Specialties:</strong> <span id="hospital-specialties"></span></p>
-                <p><strong>Doctors:</strong> <span id="hospital-doctors"></span></p>
-                {% if current_user.is_authenticated and current_user.role in ['doctor', 'admin', 'patient'] %}
-                <a id="schedule-btn" href="#" class="btn btn-primary schedule-btn">Schedule Appointment</a>
-                {% else %}
-                <p><small>Please log in to schedule an appointment.</small></p>
-                {% endif %}
+        <div class="container-fluid">
+            <div class="row">
+                <div id="map" class="col-sm"></div>
+                <div id="hospital-details" class="card col " style="display: none;">
+                    <div class="card-body">
+                        <h3 id="hospital-name"></h3>
+                        <p><strong>Address:</strong> <span id="hospital-address"></span></p>
+                        <p><strong>Specialties:</strong> <span id="hospital-specialties"></span></p>
+                        <p><strong>Doctors:</strong> <span id="hospital-doctors"></span></p>
+                        {% if current_user.is_authenticated and current_user.role in ['doctor', 'admin', 'patient'] %}
+                        <a id="schedule-btn" href="#" class="btn btn-primary schedule-btn">Schedule Appointment</a>
+                        {% else %}
+                        <p><small>Please log in to schedule an appointment.</small></p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
+           
         </div>
+       
     </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -106,7 +133,7 @@
                     scheduleBtn.href = "{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}".replace('1', hospital.id);
                 }
 
-                details.style.display = 'block';
+                details.style.display = 'inline';
             });
         });
     </script>
