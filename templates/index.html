@@ -11,13 +11,12 @@
             width: 100%;
             margin: auto;
         }
-        #map { height: 500px;
-        
-            max-width: 50%;
+        #map { 
+            height: 500px;
             border-radius: 10px;
             margin-right: 20px;
             margin-top: 20px;
-            float: left;
+        
             
         }
 
@@ -27,7 +26,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             font-size: 1.5vw;
-            float: left;
+            
             
 
         }
@@ -47,6 +46,9 @@
         .schedule-btn {
             margin-top: 15px;
         }
+
+        
+    
        
     </style>
 </head>
@@ -69,9 +71,12 @@
         <h1>Welcome to Appointment Scheduler</h1>
         <p>View the locations of healthcare facilities on the map below and schedule appointments:</p>
         <div class="container-fluid">
-            <div class="row">
-                <div id="map" class="col-sm"></div>
-                <div id="hospital-details" class="card col " style="display: none;">
+           
+            <div class="row" id="map-row">
+                <div class="col-12 col-md-6">
+                    <div id="map"></div>
+                </div>
+                <div id="hospital-details" class="card col-12 col-md-6 " style="display: none;">
                     <div class="card-body">
                         <h3 id="hospital-name"></h3>
                         <p><strong>Address:</strong> <span id="hospital-address"></span></p>
@@ -106,6 +111,7 @@
         // Provera da li su podaci validni, ako ne, postavi prazne nizove
         if (!Array.isArray(hospitals)) hospitals = [];
         if (!Array.isArray(doctors)) doctors = [];
+
 
         hospitals.forEach(function(hospital) {
             var latLng = [hospital.latitude, hospital.longitude];
