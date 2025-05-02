@@ -16,6 +16,7 @@
             border-radius: 10px;
             margin-right: 20px;
             margin-top: 20px;
+            max-width: 100%;
         
             
         }
@@ -26,6 +27,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             font-size: 1.5vw;
+            max-width: 100%;
             
             
 
@@ -47,7 +49,38 @@
             margin-top: 15px;
         }
 
-        
+        #doctor-image {
+
+            height: 600px;
+            border-radius: 10px;
+        }
+        #intro-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #intro-text {
+            
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+        #introduction {
+           
+            height: 90vh;
+            
+        }
+        #introduction-row {
+
+            height: 90vh;
+        }
+
+        #intro-background {
+
+            height:100vh;
+            background-color: rgb(184, 255, 209);
+        }
     
        
     </style>
@@ -67,6 +100,22 @@
             </div>
         </div>
     </nav>
+    <div id="intro-background">
+        <div class="container" id="introduction">
+            <div class="row" id="introduction-row">
+                <div class="col-6" id="intro-text">
+                    <div></div>
+                    <h1>Personalized doctor appointment app</h1>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem ut quia libero molestias commodi vero ex voluptatem officiis, ipsum at nam? Iste, ullam? Modi eveniet deserunt nihil, quasi cupiditate eaque.</p>
+                </div>
+                <div class="col-6" id="intro-image">
+                   
+                   <img src="{{ url_for('static', filename='images/doctor.jpg') }}" alt="Doctor" id="doctor-image" class="img-fluid">
+            </div>
+        </div>
+        </div>
+    </div>
+   
     <div class="container mt-4" id="map-container">
         <h1>Welcome to Appointment Scheduler</h1>
         <p>View the locations of healthcare facilities on the map below and schedule appointments:</p>
