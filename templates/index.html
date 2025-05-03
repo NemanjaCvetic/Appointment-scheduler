@@ -1,50 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Appointment Scheduler</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #map-container{
+        #map-container {
 
             width: 100%;
             margin: auto;
         }
-        #map { 
+
+        #map {
             height: 500px;
             border-radius: 10px;
             margin-right: 20px;
             margin-top: 20px;
             max-width: 100%;
-        
-            
+
+
         }
 
         #hospital-details {
             margin-top: 20px;
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             font-size: 1.5vw;
             max-width: 100%;
-            
-            
+
+
 
         }
+
         #hospital-details h3 {
             color: #007bff;
             margin-bottom: 15px;
             font-size: 2.5vw;
-            
+
         }
+
         #hospital-details p {
             margin: 10px 0;
-            
+
         }
+
         #hospital-details strong {
             color: #333;
         }
+
         .schedule-btn {
             margin-top: 15px;
         }
@@ -54,23 +60,27 @@
             height: 600px;
             border-radius: 10px;
         }
+
         #intro-image {
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         #intro-text {
-            
+
             display: flex;
             align-items: center;
             flex-direction: column;
             justify-content: center;
         }
+
         #introduction {
-           
+
             height: 90vh;
-            
+
         }
+
         #introduction-row {
 
             height: 90vh;
@@ -78,13 +88,47 @@
 
         #intro-background {
 
-            height:100vh;
+            height: 100vh;
             background-color: rgb(184, 255, 209);
         }
-    
+
+        #ds-background {
+            background-color: rgb(22, 248, 120);
+            height: 100vh;
+            padding-top: 20px;
+        }
+
+        #doctor-scheduling-row {
+
+            margin-top: 20px;
+            height: 90vh;
+        }
+        #doctor-scheduling-card1, #doctor-scheduling-card2, #doctor-scheduling-card3 {
+            
+            height: 400px;
+           
+            
+           
+        }
+        #ds-card1, #ds-card2, #ds-card3 {
+            height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            
+        }
+        #ds-card-body1, #ds-card-body2, #ds-card-body3 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 50px;
+            
+        }
        
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -103,95 +147,137 @@
     <div id="intro-background">
         <div class="container" id="introduction">
             <div class="row" id="introduction-row">
-                <div class="col-6" id="intro-text">
+                <div class="col-sm-12 col-md-6" id="intro-text">
                     <div></div>
                     <h1>Personalized doctor appointment app</h1>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem ut quia libero molestias commodi vero ex voluptatem officiis, ipsum at nam? Iste, ullam? Modi eveniet deserunt nihil, quasi cupiditate eaque.</p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem ut quia libero molestias commodi
+                        vero ex voluptatem officiis, ipsum at nam? Iste, ullam? Modi eveniet deserunt nihil, quasi
+                        cupiditate eaque.</p>
                 </div>
-                <div class="col-6" id="intro-image">
-                   
-                   <img src="{{ url_for('static', filename='images/doctor.jpg') }}" alt="Doctor" id="doctor-image" class="img-fluid">
+                <div class="col-sm-12 col-md-6" id="intro-image">
+
+                    <img src="{{ url_for('static', filename='images/doctor.jpg') }}" alt="Doctor" id="doctor-image"
+                        class="img-fluid">
+                </div>
             </div>
         </div>
-        </div>
     </div>
-   
-    <div class="container mt-4" id="map-container">
-        <h1>Welcome to Appointment Scheduler</h1>
-        <p>View the locations of healthcare facilities on the map below and schedule appointments:</p>
-        <div class="container-fluid">
-           
-            <div class="row" id="map-row">
-                <div class="col-12 col-md-6">
-                    <div id="map"></div>
+    <div id="ds-background">
+        <div class="container" id="doctor-scheduling">
+            <div class="row" id="doctor-scheduling-row">
+                <div class="col-lg-4 col-sm-12 mx-md-auto my-md-auto mt-3" id="doctor-scheduling-card1">
+                    <div class="card" id="ds-card1">
+                        <div class="card-body" id="ds-card-body1">
+                            <h5 class="card-title">Online self-scheduling</h5>
+                            <p class="card-text">We’ll give you a complete booking page that you can customize and embed
+                                into your website. Add your logo, messages, and custom prices so your patients can
+                                identify you and schedule appointments at any time.</p>
+                        </div>
+                    </div>
+
                 </div>
-                <div id="hospital-details" class="card col-12 col-md-6 " style="display: none;">
-                    <div class="card-body">
-                        <h3 id="hospital-name"></h3>
-                        <p><strong>Address:</strong> <span id="hospital-address"></span></p>
-                        <p><strong>Specialties:</strong> <span id="hospital-specialties"></span></p>
-                        <p><strong>Doctors:</strong> <span id="hospital-doctors"></span></p>
-                        {% if current_user.is_authenticated and current_user.role in ['doctor', 'admin', 'patient'] %}
-                        <a id="schedule-btn" href="#" class="btn btn-primary schedule-btn">Schedule Appointment</a>
-                        {% else %}
-                        <p><small>Please log in to schedule an appointment.</small></p>
-                        {% endif %}
+                <div class="col-lg-4 col-sm-12 mx-md-auto my-md-auto mt-3 " id="doctor-scheduling-card2">
+                    <div class="card" id="ds-card2">
+                        <div class="card-body" id="ds-card-body2">
+                            <h5 class="card-title">Reduce no-shows </h5>
+                            <p class="card-text">Configure notifications for patients and visiting physicians so they
+                                know exactly when to show up. Remind them via emails or text messages a day or an hour
+                                before the appointment.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-12 mx-md-auto my-md-auto mt-3" id="doctor-scheduling-card3">
+                    <div class="card" id="ds-card3">
+                        <div class="card-body" id="ds-card-body3">
+                            <h5 class="card-title">Centralized appointment dashboard</h5>
+                            <p class="card-text">Access all your booked appointments from a central calendar dashboard, view your past and upcoming visits, and stay ahead of your schedule. You can also sync your calendar apps (like Google and Outlook) and update your calendar with all your appointments.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-           
         </div>
-       
     </div>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        var map = L.map('map').setView([46.1512, 14.9955], 8); // Centar Slovenije
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
-
-        var hospitals = {{ hospitals|tojson|safe }};
-        var doctors = {{ doctors|tojson|safe }};
-
-        // Logovanje za debagovanje
-        console.log("Hospitals:", hospitals);
-        console.log("Doctors:", doctors);
-
-        // Provera da li su podaci validni, ako ne, postavi prazne nizove
-        if (!Array.isArray(hospitals)) hospitals = [];
-        if (!Array.isArray(doctors)) doctors = [];
 
 
-        hospitals.forEach(function(hospital) {
-            var latLng = [hospital.latitude, hospital.longitude];
-            var marker = L.marker(latLng).addTo(map);
+            <div class="container mt-4" id="map-container">
+                <h1>Welcome to Appointment Scheduler</h1>
+                <p>View the locations of healthcare facilities on the map below and schedule appointments:</p>
+                <div class="container-fluid">
 
-            marker.on('click', function() {
-                var details = document.getElementById('hospital-details');
-                var name = document.getElementById('hospital-name');
-                var address = document.getElementById('hospital-address');
-                var specialties = document.getElementById('hospital-specialties');
-                var doctorsList = document.getElementById('hospital-doctors');
-                var scheduleBtn = document.getElementById('schedule-btn');
+                    <div class="row" id="map-row">
+                        <div class="col-12 col-md-6">
+                            <div id="map"></div>
+                        </div>
+                        <div id="hospital-details" class="card col-12 col-md-6 " style="display: none;">
+                            <div class="card-body">
+                                <h3 id="hospital-name"></h3>
+                                <p><strong>Address:</strong> <span id="hospital-address"></span></p>
+                                <p><strong>Specialties:</strong> <span id="hospital-specialties"></span></p>
+                                <p><strong>Doctors:</strong> <span id="hospital-doctors"></span></p>
+                                {% if current_user.is_authenticated and current_user.role in ['doctor', 'admin',
+                                'patient'] %}
+                                <a id="schedule-btn" href="#" class="btn btn-primary schedule-btn">Schedule
+                                    Appointment</a>
+                                {% else %}
+                                <p><small>Please log in to schedule an appointment.</small></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
 
-                name.textContent = hospital.name;
-                address.textContent = `${hospital.address}, ${hospital.city}`;
+                </div>
 
-                // Filtriranje doktora po hospital_id
-                var hospitalDoctors = doctors.filter(d => d.hospital_id === hospital.id);
-                var specialtySet = new Set(hospitalDoctors.map(d => d.specialty));
-                specialties.textContent = Array.from(specialtySet).join(', ') || 'No specialties available';
-                doctorsList.textContent = hospitalDoctors.map(d => d.name).join(', ') || 'No doctors available';
+            </div>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <script>
+                var map = L.map('map').setView([46.1512, 14.9955], 8); // Centar Slovenije
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
 
-                // Povezivanje dugmeta za zakazivanje
-                if (scheduleBtn) {
-                    scheduleBtn.href = "{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}".replace('1', hospital.id);
-                }
+                var hospitals = {{ hospitals| tojson | safe }};
+                var doctors = {{ doctors| tojson | safe }};
 
-                details.style.display = 'inline';
-            });
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                // Logovanje za debagovanje
+                console.log("Hospitals:", hospitals);
+                console.log("Doctors:", doctors);
+
+                // Provera da li su podaci validni, ako ne, postavi prazne nizove
+                if (!Array.isArray(hospitals)) hospitals = [];
+                if (!Array.isArray(doctors)) doctors = [];
+
+
+                hospitals.forEach(function (hospital) {
+                    var latLng = [hospital.latitude, hospital.longitude];
+                    var marker = L.marker(latLng).addTo(map);
+
+                    marker.on('click', function () {
+                        var details = document.getElementById('hospital-details');
+                        var name = document.getElementById('hospital-name');
+                        var address = document.getElementById('hospital-address');
+                        var specialties = document.getElementById('hospital-specialties');
+                        var doctorsList = document.getElementById('hospital-doctors');
+                        var scheduleBtn = document.getElementById('schedule-btn');
+
+                        name.textContent = hospital.name;
+                        address.textContent = `${hospital.address}, ${hospital.city}`;
+
+                        // Filtriranje doktora po hospital_id
+                        var hospitalDoctors = doctors.filter(d => d.hospital_id === hospital.id);
+                        var specialtySet = new Set(hospitalDoctors.map(d => d.specialty));
+                        specialties.textContent = Array.from(specialtySet).join(', ') || 'No specialties available';
+                        doctorsList.textContent = hospitalDoctors.map(d => d.name).join(', ') || 'No doctors available';
+
+                        // Povezivanje dugmeta za zakazivanje
+                        if (scheduleBtn) {
+                            scheduleBtn.href = "{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}".replace('1', hospital.id);
+                        }
+
+                        details.style.display = 'inline';
+                    });
+                });
+            </script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
