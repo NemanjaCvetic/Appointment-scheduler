@@ -100,6 +100,53 @@
             transition: all 0.5s ease;
         }
 
+         /* Features Section */
+         #features-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .feature-text {
+            color: #666;
+            line-height: 1.6;
+        }
+
         #map-container {
 
             width: 100%;
@@ -245,41 +292,43 @@
         </div>
     </section>
 
-    <div id="ds-background">
-        <div class="container" id="doctor-scheduling">
-            <div class="row" id="doctor-scheduling-row">
-                <div class="col-lg-4 col-sm-12 mx-md-auto my-md-auto mt-3" id="doctor-scheduling-card1">
-                    <div class="card" id="ds-card1">
-                        <div class="card-body" id="ds-card-body1">
-                            <h5 class="card-title">Online self-scheduling</h5>
-                            <p class="card-text">We’ll give you a complete booking page that you can customize and embed
-                                into your website. Add your logo, messages, and custom prices so your patients can
-                                identify you and schedule appointments at any time.</p>
+    <!-- Features Section -->
+    <section id="features-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Our Platform</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-laptop-medical"></i>
                         </div>
-                    </div>
-
-                </div>
-                <div class="col-lg-4 col-sm-12 mx-md-auto my-md-auto mt-3 " id="doctor-scheduling-card2">
-                    <div class="card" id="ds-card2">
-                        <div class="card-body" id="ds-card-body2">
-                            <h5 class="card-title">Reduce no-shows </h5>
-                            <p class="card-text">Configure notifications for patients and visiting physicians so they
-                                know exactly when to show up. Remind them via emails or text messages a day or an hour
-                                before the appointment.</p>
-                        </div>
+                        <h3 class="feature-title">Online Self-Scheduling</h3>
+                        <p class="feature-text">Book appointments 24/7 at your convenience. Our customizable booking
+                            page integrates seamlessly with your healthcare provider's website.</p>
                     </div>
                 </div>
-                <div class="col-lg-4 col-sm-12 mx-md-auto my-md-auto mt-3" id="doctor-scheduling-card3">
-                    <div class="card" id="ds-card3">
-                        <div class="card-body" id="ds-card-body3">
-                            <h5 class="card-title">Centralized appointment dashboard</h5>
-                            <p class="card-text">Access all your booked appointments from a central calendar dashboard, view your past and upcoming visits, and stay ahead of your schedule. You can also sync your calendar apps (like Google and Outlook) and update your calendar with all your appointments.</p>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
                         </div>
+                        <h3 class="feature-title">Smart Reminders</h3>
+                        <p class="feature-text">Reduce no-shows with automated email and text reminders that notify
+                            patients before their scheduled appointments.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Centralized Dashboard</h3>
+                        <p class="feature-text">Access all your booked appointments from a central calendar dashboard, view your past and upcoming visits, and stay ahead of your schedule.</p>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
 
             <div class="container mt-4" id="map-container">
