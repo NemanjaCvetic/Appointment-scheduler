@@ -44,7 +44,62 @@
         .nav-link:hover {
             color: var(--primary-color) !important;
         }
-        
+
+          /* Hero Section */
+          #hero-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .hero-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .hero-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-image-container {
+            position: relative;
+            text-align: center;
+        }
+
+        .doctor-image {
+            max-height: 500px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+        }
+
         #map-container {
 
             width: 100%;
@@ -93,43 +148,11 @@
             margin-top: 15px;
         }
 
-        #doctor-image {
+        
 
-            height: 600px;
-            border-radius: 10px;
-        }
+       
 
-        #intro-image {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #intro-text {
-
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        #introduction {
-
-            height: 90vh;
-
-        }
-
-        #introduction-row {
-
-            height: 90vh;
-        }
-
-        #intro-background {
-
-            height: 100vh;
-            background-color: rgb(184, 255, 209);
-        }
-
+       
         #ds-background {
             background-color: rgb(22, 248, 120);
             height: 100vh;
@@ -204,24 +227,24 @@
             </div>
         </div>
     </nav>
-    <div id="intro-background">
-        <div class="container" id="introduction">
-            <div class="row" id="introduction-row">
-                <div class="col-sm-12 col-md-6" id="intro-text">
-                    <div></div>
-                    <h1>Personalized doctor appointment app</h1>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem ut quia libero molestias commodi
-                        vero ex voluptatem officiis, ipsum at nam? Iste, ullam? Modi eveniet deserunt nihil, quasi
-                        cupiditate eaque.</p>
+     <!-- Hero Section -->
+    <section id="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">Smart Doctor Appointment Scheduling</h1>
+                    <p class="hero-subtitle">Book appointments with the best doctors in your area. Our platform makes
+                        scheduling healthcare visits simple, quick, and hassle-free.</p>
+                    <a href="#map-section" class="btn hero-btn">Find A Doctor Now</a>
                 </div>
-                <div class="col-sm-12 col-md-6" id="intro-image">
-
-                    <img src="{{ url_for('static', filename='images/doctor.jpg') }}" alt="Doctor" id="doctor-image"
-                        class="img-fluid">
+                <div class="col-lg-6 doctor-image-container">
+                    <img src="{{ url_for('static', filename='images/doctor.jpg') }}" alt="Doctor"
+                        class="img-fluid doctor-image">
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
     <div id="ds-background">
         <div class="container" id="doctor-scheduling">
             <div class="row" id="doctor-scheduling-row">
