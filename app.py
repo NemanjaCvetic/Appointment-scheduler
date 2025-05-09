@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from supabase import create_client, Client
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -204,3 +205,6 @@ def add_findings(appointment_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
