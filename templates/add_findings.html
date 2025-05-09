@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Findings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Appointment Scheduler</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="{{ url_for('index') }}">Hospital Map</a>
+                <a class="nav-link" href="{{ url_for('health_record') }}">My Record/Appointments</a>
+                {% if current_user.role == 'admin' %}
+                <a class="nav-link" href="{{ url_for('add_patient') }}">Add Patient</a>
+                {% endif %}
+                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h1>Add Findings for Appointment</h1>
+        <div class="card p-4 mb-3">
+            <p><strong>Patient:</strong> {{ appointment.patients.name }}</p>
+            <p><strong>Date:</strong> {{ appointment.date }}</p>
+            <p><strong>Time:</strong> {{ appointment.time }}</p>
+            <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+            <p><strong>Hospital:</strong> {{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</p>
+        </div>
+        <form method="POST" class="card p-4">
+            <div class="mb-3">
+                <label class="form-label">Findings:</label>
+                <textarea name="findings" class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit and Mark as Completed</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

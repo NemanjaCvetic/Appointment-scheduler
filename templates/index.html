@@ -1,85 +1,544 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Appointment Scheduler</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <title>Appointment Scheduler</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2979ff;
+            --secondary-color: #0d47a1;
+            --accent-color: #e3f2fd;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-color) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+          /* Hero Section */
+          #hero-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .hero-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .hero-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-image-container {
+            position: relative;
+            text-align: center;
+        }
+
+        .doctor-image {
+            max-height: 500px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+        }
+
+         /* Features Section */
+         #features-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .feature-text {
+            color: #666;
+            line-height: 1.6;
+        }
+
+         /* Map Section */
+         #map-section {
+            padding: 80px 0;
+            background-color: var(--light-gray);
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        @keyframes slide-right {
+            0% {
+                max-width: 0px;
+                opacity: 0;
+            }
+
+            100% {
+                max-width: 100%;
+                opacity: 1;
+            }
+        }
+
+        #hospital-details {
+            height: 500px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: none;
+            display: none;
+            animation-duration: 0.5s;
+            animation-name: slide-right;
+            animation-timing-function: ease-out;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        #hospital-name {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        #hospital-details p {
+            margin: 15px 0;
+            font-size: 1rem;
+        }
+
+        #hospital-details strong {
+            color: var(--secondary-color);
+        }
+
+        .schedule-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Stats Section */
+        #stats-section {
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-text {
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 50px 0 20px;
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .footer-link:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .copyright {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .doctor-image {
+                max-height: 400px;
+                margin-top: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            #hero-section {
+                padding: 50px 0;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            #hospital-details {
+                margin-top: 20px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <header>
-        <h1>Medical Appointment Scheduler</h1>
-        <p>Find and book appointments with medical professionals in Slovenia</p>
-    </header>
-
-    <main>
-        <section class="map-container">
-            <h2>Select a Medical Center</h2>
-            <div id="slovenia-map"></div>
-        </section>
-
-        <section class="selection-panel">
-            <div id="center-info" class="info-panel">
-                <h3>Medical Center</h3>
-                <div id="center-details"></div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-calendar-check me-2"></i>DocScheduler
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features-section">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#map-section">Find Doctors</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('health_record') }}">My Records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('add_patient') }}">Add Patient</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
-            
-            <div id="department-list" class="info-panel hidden">
-                <h3>Departments</h3>
-                <div id="department-details"></div>
-            </div>
-            
-            <div id="doctor-list" class="info-panel hidden">
-                <h3>Doctors</h3>
-                <div id="doctor-details"></div>
-            </div>
-            
-            <div id="schedule-view" class="info-panel hidden">
-                <h3>Available Appointments</h3>
-                <div id="schedule-details"></div>
-                
-                <div id="booking-form" class="hidden">
-                    <h4>Book Appointment</h4>
-                    <form id="appointment-form">
-                        <div class="form-group">
-                            <label for="name">Full Name:</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone:</label>
-                            <input type="tel" id="phone" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="notes">Notes (Optional):</label>
-                            <textarea id="notes" name="notes"></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary">Book Appointment</button>
-                    </form>
+        </div>
+    </nav>
+     <!-- Hero Section -->
+    <section id="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">Smart Doctor Appointment Scheduling</h1>
+                    <p class="hero-subtitle">Book appointments with the best doctors in your area. Our platform makes
+                        scheduling healthcare visits simple, quick, and hassle-free.</p>
+                    <a href="#map-section" class="btn hero-btn">Find A Doctor Now</a>
+                </div>
+                <div class="col-lg-6 doctor-image-container">
+                    <img src="{{ url_for('static', filename='images/doctor.jpg') }}" alt="Doctor"
+                        class="img-fluid doctor-image">
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer>
-        <p>&copy; 2025 Medical Appointment Scheduler</p>
-    </footer>
+    <!-- Features Section -->
+    <section id="features-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Our Platform</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-laptop-medical"></i>
+                        </div>
+                        <h3 class="feature-title">Online Self-Scheduling</h3>
+                        <p class="feature-text">Book appointments 24/7 at your convenience. Our customizable booking
+                            page integrates seamlessly with your healthcare provider's website.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h3 class="feature-title">Smart Reminders</h3>
+                        <p class="feature-text">Reduce no-shows with automated email and text reminders that notify
+                            patients before their scheduled appointments.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Centralized Dashboard</h3>
+                        <p class="feature-text">Access all your booked appointments from a central calendar dashboard, view your past and upcoming visits, and stay ahead of your schedule.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div id="confirmation-modal" class="modal hidden">
-        <div class="modal-content">
-            <h3>Appointment Confirmed</h3>
-            <p>Your appointment has been successfully booked.</p>
-            <div id="appointment-details"></div>
-            <button id="close-modal" class="btn-primary">Close</button>
+<!-- Map Section -->
+<section id="map-section">
+    <div class="container">
+        <h2 class="section-title">Find Healthcare Facilities Near You</h2>
+        <p class="text-center mb-5">Click on a location to view details and schedule an appointment</p>
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div id="map"></div>
+            </div>
+            <div class="col-lg-6">
+                <div id="hospital-details" class="card">
+                    <h3 id="hospital-name"></h3>
+                    <p><strong>Address:</strong> <span id="hospital-address"></span></p>
+                    <p><strong>Specialties:</strong> <span id="hospital-specialties"></span></p>
+                    <p><strong>Doctors:</strong> <span id="hospital-doctors"></span></p>
+                    {% if current_user.is_authenticated and current_user.role in ['doctor', 'admin', 'patient'] %}
+                    <a id="schedule-btn" href="#" class="btn schedule-btn">Schedule Appointment</a>
+                    {% else %}
+                    <p class="mt-4"><i class="fas fa-info-circle me-2"></i>Please log in to schedule an appointment.
+                    </p>
+                    <a href="{{ url_for('login') }}" class="btn schedule-btn">Log In Now</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
+</section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/scheduler.js') }}"></script>
+<!-- Stats Section -->
+<section id="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <div class="stat-number">5000+</div>
+                    <div class="stat-text">Appointments Booked</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <div class="stat-number">200+</div>
+                    <div class="stat-text">Healthcare Providers</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-text">Patient Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-title">DocScheduler</h4>
+                <p>Making healthcare accessible through smart appointment scheduling.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-title">Quick Links</h4>
+                <a href="#" class="footer-link">Home</a>
+                <a href="#features-section" class="footer-link">Features</a>
+                <a href="#map-section" class="footer-link">Find Doctors</a>
+                <a href="{{ url_for('login') }}" class="footer-link">Login</a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-title">Contact Us</h4>
+                <a href="mailto:info@docscheduler.com" class="footer-link">
+                    <i class="fas fa-envelope me-2"></i>info@docscheduler.com
+                </a>
+                <a href="tel:+1234567890" class="footer-link">
+                    <i class="fas fa-phone me-2"></i>+1 (234) 567-890
+                </a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 DocScheduler. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    var map = L.map('map').setView([46.1512, 14.9955], 8); // Center of Slovenia
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    var hospitals = {{ hospitals| tojson | safe }};
+    var doctors = {{ doctors| tojson | safe }};
+
+    // Logging for debugging
+    console.log("Hospitals:", hospitals);
+    console.log("Doctors:", doctors);
+
+    // Check if data is valid, if not, set empty arrays
+    if (!Array.isArray(hospitals)) hospitals = [];
+    if (!Array.isArray(doctors)) doctors = [];
+
+    hospitals.forEach(function (hospital) {
+        var latLng = [hospital.latitude, hospital.longitude];
+        var marker = L.marker(latLng).addTo(map);
+
+        marker.on('click', function () {
+            var details = document.getElementById('hospital-details');
+            var name = document.getElementById('hospital-name');
+            var address = document.getElementById('hospital-address');
+            var specialties = document.getElementById('hospital-specialties');
+            var doctorsList = document.getElementById('hospital-doctors');
+            var scheduleBtn = document.getElementById('schedule-btn');
+
+            name.textContent = hospital.name;
+            address.textContent = `${hospital.address}, ${hospital.city}`;
+
+            // Filter doctors by hospital_id
+            var hospitalDoctors = doctors.filter(d => d.hospital_id === hospital.id);
+            var specialtySet = new Set(hospitalDoctors.map(d => d.specialty));
+            specialties.textContent = Array.from(specialtySet).join(', ') || 'No specialties available';
+            doctorsList.textContent = hospitalDoctors.map(d => d.name).join(', ') || 'No doctors available';
+
+            // Link the scheduling button
+            if (scheduleBtn) {
+                scheduleBtn.href = "{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}".replace('1', hospital.id);
+            }
+
+            details.style.display = 'block';
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
