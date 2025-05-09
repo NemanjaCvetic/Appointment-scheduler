@@ -44,38 +44,43 @@ def load_user(user_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        role = request.form['role']
         email = request.form['email']
         password = request.form['password']
-        
-        if role == 'patient':
-            response = supabase.table('patients')\
-                .select('id, email')\
-                .eq('email', email)\
-                .eq('password', password)\
-                .execute()
-        elif role == 'doctor':
-            response = supabase.table('doctors')\
-                .select('id, email')\
-                .eq('email', email)\
-                .eq('password', password)\
-                .execute()
-        else:  # admin
-            if email == 'admin@gmail.com' and password == 'admin':
-                user = User('admin', 'admin', 'admin@gmail.com')
-                session['user_role'] = 'admin'  # Čuvamo role u sesiji
-                login_user(user)
-                return redirect(url_for('index'))
-            response = None
-        
+
+        # Check patients table
+        response = supabase.table('patients')\
+            .select('id, email')\
+            .eq('email', email)\
+            .eq('password', password)\
+            .execute()
         if response and response.data:
             user_data = response.data[0]
-            user = User(user_data['id'], role, user_data['email'])
-            session['user_role'] = role  # Čuvamo role u sesiji
+            user = User(user_data['id'], 'patient', user_data['email'])
+            session['user_role'] = 'patient'
             login_user(user)
             return redirect(url_for('index'))
-        else:
-            flash('Invalid login credentials')
+
+        # Check doctors table
+        response = supabase.table('doctors')\
+            .select('id, email')\
+            .eq('email', email)\
+            .eq('password', password)\
+            .execute()
+        if response and response.data:
+            user_data = response.data[0]
+            user = User(user_data['id'], 'doctor', user_data['email'])
+            session['user_role'] = 'doctor'
+            login_user(user)
+            return redirect(url_for('index'))
+
+        # Check admin (special case)
+        if email == 'admin@gmail.com' and password == 'admin':
+            user = User('admin', 'admin', 'admin@gmail.com')
+            session['user_role'] = 'admin'
+            login_user(user)
+            return redirect(url_for('index'))
+
+        flash('Invalid login credentials')
     return render_template('login.html')
 
 # Logout ruta
