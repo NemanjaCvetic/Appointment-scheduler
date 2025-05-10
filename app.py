@@ -96,10 +96,15 @@ def logout():
 @app.route('/')
 def index():
     hospitals_data = supabase.table('hospitals').select('id, name, address, city, latitude, longitude').execute().data
+    num_hospital=len(hospitals_data)
     doctors_data = supabase.table('doctors').select('id, name, specialty, hospital_id').execute().data
+    num_doctors=len(doctors_data)
     hospitals = hospitals_data if hospitals_data else []
     doctors = doctors_data if doctors_data else []
-    return render_template('index.html', hospitals=hospitals, doctors=doctors)
+    num_app=len(supabase.table('appointments').select('*').execute().data)
+    print(num_app)
+    
+    return render_template('index.html', hospitals=hospitals, doctors=doctors,num_hospital=num_hospital,num_doctors=num_doctors,num_app=num_app)
 
 # Zdravstveni karton - zaštićeno
 @app.route('/health-record')
@@ -116,7 +121,7 @@ def health_record():
     elif current_user.role == 'doctor':
         doctor_id = current_user.id
         appointments_response = supabase.table('appointments')\
-            .select('id, patients(name), date, time, reason, findings, is_completed, hospitals(name, city)')\
+            .select('id, patients(first_name,last_name), date, time, reason, findings, is_completed, hospitals(name, city)')\
             .eq('doctor_id', doctor_id)\
             .eq('is_completed', False)\
             .execute()
@@ -125,38 +130,56 @@ def health_record():
     else:  # admin
         patients = supabase.table('patients').select('*').execute().data
         appointments = supabase.table('appointments')\
-            .select('id, patients(name), doctors(name, specialty), hospitals(name, city), date, time, reason, findings, is_completed')\
-            .execute().data
+            .select('id, patients(first_name), doctors(name, specialty), hospitals(name, city), date, time, reason, findings, is_completed').execute().data
         return render_template('admin_view.html', patients=patients, appointments=appointments)
 
     if current_user.role != 'admin' and not patient and not appointments:
         return "Data not found", 404
     return render_template('health_record.html', patient=patient, appointments=appointments)
 
-# Dodavanje pacijenta (samo admin)
-@app.route('/add-patient', methods=['GET', 'POST'])
-@login_required
+# Registracija korisnika
+@app.route('/register', methods=['GET', 'POST'])
 def add_patient():
-    
     if request.method == 'POST':
         # Pronalazimo maksimalni ID u tabeli patients i dodajemo 1
         max_id_response = supabase.table('patients').select('id').order('id', desc=True).limit(1).execute()
         new_id = 1 if not max_id_response.data else max_id_response.data[0]['id'] + 1
 
-        name = request.form['name']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        dob = request.form['dob']
+        gender = request.form['gender']
+        blood_type = request.form['blood_type']
+        allergies = request.form['allergies']
+        medical_conditions = request.form['medical_conditions']
+
+        # Validate required fields and password confirmation
+        if not all([first_name, last_name, email, password, confirm_password, dob, gender]):
+            flash('All required fields must be filled')
+            return redirect(url_for('register'))
+        if password != confirm_password:
+            flash('Passwords do not match')
+            return redirect(url_for('register'))
+
         data = {
-            'id': new_id,  # Automatski generisan ID
-            'name': name,
-            'dob': request.form['dob'],
-            'gender': request.form['gender'],
-            'medical_history': request.form['medical_history'],
-            'email': f"{name.lower().replace(' ', '.')}@gmail.com",
-            'password': name.split(' ')[0].lower()
+            'id': new_id,
+            'first_name': first_name,
+            'last_name': last_name,
+            'dob': dob,
+            'gender': gender,
+            'blood_type': blood_type,
+            'allergies': allergies,
+            'medical_conditions': medical_conditions,
+            'email': email,
+            'password': password
         }
         supabase.table('patients').insert(data).execute()
         return redirect(url_for('health_record'))
-    return render_template('add_patient.html')
 
+    return render_template('register.html')
 # Dodavanje termina (samo doktor ili admin)
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
@@ -195,7 +218,7 @@ def add_findings(appointment_id):
     
     # Pronalazimo appointment za prikaz informacija
     appointment_response = supabase.table('appointments')\
-        .select('id, patients(name), date, time, reason, hospitals(name, city)')\
+        .select('id, patients(first_name), date, time, reason, hospitals(name, city)')\
         .eq('id', appointment_id)\
         .execute()
     if not appointment_response.data:

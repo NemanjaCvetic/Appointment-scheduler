@@ -334,15 +334,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('health_record') }}">My Records</a>
                     </li>
+                    {% if session.get('user_role')=='doctor'%}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('add_patient') }}">Add Patient</a>
                     </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('add_patient') }}">Register</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -439,20 +444,20 @@
         <div class="row">
             <div class="col-md-4 mb-4 mb-md-0">
                 <div class="stat-item">
-                    <div class="stat-number">5000+</div>
-                    <div class="stat-text">Appointments Booked</div>
+                    <div class="stat-number">{{ num_hospital }}</div>
+                    <div class="stat-text">Number of hospitals</div>
                 </div>
             </div>
             <div class="col-md-4 mb-4 mb-md-0">
                 <div class="stat-item">
-                    <div class="stat-number">200+</div>
-                    <div class="stat-text">Healthcare Providers</div>
+                    <div class="stat-number">{{num_doctors}}</div>
+                    <div class="stat-text">Number of doctors</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-item">
-                    <div class="stat-number">98%</div>
-                    <div class="stat-text">Patient Satisfaction</div>
+                    <div class="stat-number">{{num_app}}</div>
+                    <div class="stat-text">Number of appointments</div>
                 </div>
             </div>
         </div>
@@ -480,7 +485,7 @@
                     <i class="fas fa-envelope me-2"></i>info@docscheduler.com
                 </a>
                 <a href="tel:+1234567890" class="footer-link">
-                    <i class="fas fa-phone me-2"></i>+1 (234) 567-890
+                    <i class="fas fa-phone me-2"></i>+386 699 945 257
                 </a>
             </div>
         </div>

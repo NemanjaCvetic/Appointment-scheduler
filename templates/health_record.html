@@ -21,10 +21,12 @@
     </nav>
     <div class="container mt-5">
         {% if patient %}
-        <h1>Health Record: {{ patient.name }}</h1>
+        <h1>Health Record: {{ patient.first_name }}  {{ patient.last_name }}</h1>
         <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
         <p><strong>Gender:</strong> {{ patient.gender }}</p>
-        <p><strong>Medical History:</strong> {{ patient.medical_history }}</p>
+        <p><strong>Medical History:</strong> {{ patient.medical_conditions }}</p>
+        <p><strong>Blood type:</strong> {{ patient.blood_type }}</p>
+        <p><strong>Allergies:</strong> {{ patient.allergies }}</p>
         {% endif %}
         <h2>Appointments</h2>
         <table class="table">
@@ -52,7 +54,7 @@
                 {% for appointment in appointments %}
                 <tr>
                     {% if current_user.role == 'doctor' %}
-                    <td>{{ appointment.patients.name }}</td>
+                    <td>{{ appointment.patients.first_name }}  {{ appointment.patients.last_name }}</td>
                     {% else %}
                     <td>{{ appointment.doctors.name }} ({{ appointment.doctors.specialty }})</td>
                     {% endif %}
