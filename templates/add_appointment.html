@@ -30,19 +30,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Appointment Scheduler</a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="{{ url_for('index') }}">Hospital Map</a>
-                <a class="nav-link" href="{{ url_for('health_record') }}">My Record/Appointments</a>
-                {% if current_user.role == 'admin' %}
-                <a class="nav-link" href="{{ url_for('add_patient') }}">Add Patient</a>
-                {% endif %}
-                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
-            </div>
-        </div>
-    </nav>
+   
     <div class="container mt-5">
         <h1>Add Appointment</h1>
         <form method="POST" class="card p-4">
