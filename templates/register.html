@@ -22,11 +22,11 @@
             text-decoration: none;
             color: #007bff;
         }
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        #register-container {
+           
             height: 80vh;
+            overflow: auto;
+            padding: 50px;
         }
         .register-box {
             background-color: #fff;
@@ -35,6 +35,7 @@
             border-radius: 5px;
             width: 100%;
             max-width: 400px;
+            margin: auto;
         }
         .register-box h2 {
             margin-top: 0;
@@ -76,8 +77,8 @@
 
 {% block content %}
 <body>
-   <!-- Include the navbar -->
-    <div class="container">
+  
+    <div class="container" id="register-container">
         <div class="register-box">
             <h2>Register as Patient</h2>
             <form method="POST">
