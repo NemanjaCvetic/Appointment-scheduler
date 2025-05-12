@@ -1,0 +1,72 @@
+ <style>
+        :root {
+            --primary-color: #2979ff;
+            --secondary-color: #0d47a1;
+            --accent-color: #e3f2fd;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+        }
+
+         footer {
+            background-color: #333;
+            color: white;
+            padding: 50px 0 20px;
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .footer-link:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .copyright {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        </style>
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-title">DocScheduler</h4>
+                <p>Making healthcare accessible through smart appointment scheduling.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-title">Quick Links</h4>
+                <a href="#" class="footer-link">Home</a>
+                <a href="#features-section" class="footer-link">Features</a>
+                <a href="#map-section" class="footer-link">Find Doctors</a>
+                <a href="{{ url_for('login') }}" class="footer-link">Login</a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-title">Contact Us</h4>
+                <a href="mailto:info@docscheduler.com" class="footer-link">
+                    <i class="fas fa-envelope me-2"></i>info@docscheduler.com
+                </a>
+                <a href="tel:+1234567890" class="footer-link">
+                    <i class="fas fa-phone me-2"></i>+386 699 945 257
+                </a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 DocScheduler. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
