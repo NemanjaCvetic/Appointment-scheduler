@@ -312,7 +312,9 @@
     </style>
 </head>
 
-<body>
+{%extends 'base.html' %}
+
+{% block content %}
     <!-- Navigation -->
     <!-- Include the navbar -->
      <!-- Hero Section -->
@@ -425,36 +427,6 @@
     </div>
 </section>
 
-<!-- Footer -->
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <h4 class="footer-title">DocScheduler</h4>
-                <p>Making healthcare accessible through smart appointment scheduling.</p>
-            </div>
-            <div class="col-md-4 mb-4">
-                <h4 class="footer-title">Quick Links</h4>
-                <a href="#" class="footer-link">Home</a>
-                <a href="#features-section" class="footer-link">Features</a>
-                <a href="#map-section" class="footer-link">Find Doctors</a>
-                <a href="{{ url_for('login') }}" class="footer-link">Login</a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <h4 class="footer-title">Contact Us</h4>
-                <a href="mailto:info@docscheduler.com" class="footer-link">
-                    <i class="fas fa-envelope me-2"></i>info@docscheduler.com
-                </a>
-                <a href="tel:+1234567890" class="footer-link">
-                    <i class="fas fa-phone me-2"></i>+386 699 945 257
-                </a>
-            </div>
-        </div>
-        <div class="copyright">
-            <p>&copy; 2025 DocScheduler. All Rights Reserved.</p>
-        </div>
-    </div>
-</footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -506,5 +478,6 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+{% endblock %}
 
 </html>
