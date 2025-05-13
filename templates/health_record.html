@@ -10,7 +10,6 @@
 
 {% block content %}
 <body>
-    <!-- Include the navbar -->
     <div class="container mt-5">
         {% if patient %}
         <h1>Health Record: {{ patient.first_name }}  {{ patient.last_name }}</h1>
@@ -19,7 +18,14 @@
         <p><strong>Medical History:</strong> {{ patient.medical_conditions }}</p>
         <p><strong>Blood type:</strong> {{ patient.blood_type }}</p>
         <p><strong>Allergies:</strong> {{ patient.allergies }}</p>
+        <button class="btn btn-primary mb-3">
+            <a href="{{ url_for('edit_patient', patient_id=current_user.id) }}" style="color: white; text-decoration: none;">Edit Profile</a>
+        </button>
         {% endif %}
+        <button class="btn btn-primary mb-3">
+            <a href="{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}" style="color: white; text-decoration: none;">Add appointment</a>
+        </button>
+    
         <h2>Appointments</h2>
         <table class="table">
             <thead>

@@ -103,7 +103,7 @@ def index():
     hospitals = hospitals_data if hospitals_data else []
     doctors = doctors_data if doctors_data else []
     num_app=len(supabase.table('appointments').select('*').execute().data)
-    print(num_app)
+    
     
     return render_template('index.html', hospitals=hospitals, doctors=doctors,num_hospital=num_hospital,num_doctors=num_doctors,num_app=num_app)
 
@@ -151,14 +151,10 @@ def add_patient():
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-        dob = request.form['dob']
-        gender = request.form['gender']
-        blood_type = request.form['blood_type']
-        allergies = request.form['allergies']
-        medical_conditions = request.form['medical_conditions']
+        
 
         # Validate required fields and password confirmation
-        if not all([first_name, last_name, email, password, confirm_password, dob, gender]):
+        if not all([first_name, last_name, email, password, confirm_password]):
             flash('All required fields must be filled')
             return redirect(url_for('register'))
         if password != confirm_password:
@@ -169,11 +165,6 @@ def add_patient():
             'id': new_id,
             'first_name': first_name,
             'last_name': last_name,
-            'dob': dob,
-            'gender': gender,
-            'blood_type': blood_type,
-            'allergies': allergies,
-            'medical_conditions': medical_conditions,
             'email': email,
             'password': password
         }
@@ -234,12 +225,13 @@ def add_findings(appointment_id):
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
 def add_appointment(patient_id):
-    
-
-    doctors = supabase.table('doctors').select('id, name, specialty').execute().data
+    doctors = supabase.table('doctors').select('id, name, specialty, hospital_id').execute().data
     hospitals = supabase.table('hospitals').select('id, name, city').execute().data
 
-    if request.method == 'POST':
+    # No change: Sets initial hospital ID based on form or defaults to first hospital
+    selected_hospital_id = request.form.get('hospital_id', hospitals[0]['id'] if hospitals else None)
+
+    if request.method == 'POST' and 'doctor_id' in request.form:
         data = {
             'patient_id': patient_id,
             'doctor_id': int(request.form['doctor_id']),
@@ -251,8 +243,9 @@ def add_appointment(patient_id):
         supabase.table('appointments').insert(data).execute()
         return redirect(url_for('health_record'))
 
+    # No change: Sets initial doctor ID based on selected hospital or defaults to first doctor
     selected_date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
-    doctor_id = request.args.get('doctor_id', doctors[0]['id'] if doctors else None)
+    doctor_id = request.args.get('doctor_id', next((d['id'] for d in doctors if d['hospital_id'] == int(selected_hospital_id)), doctors[0]['id'] if doctors else None))
 
     # Fetch booked appointments for the selected doctor and date
     appointments = supabase.table('appointments')\
@@ -261,19 +254,8 @@ def add_appointment(patient_id):
         .eq('date', selected_date)\
         .execute().data
 
-    print(f"Debug: Fetched appointments for doctor_id={doctor_id}, date={selected_date}: {appointments}")  # Debug output
-    print(appointments)
+    booked_slots = [appt['time'][:5] for appt in appointments if 'time' in appt and appt['time']]
 
-    # Extract time strings, handling text type
-    booked_slots = []
-    for appt in appointments:
-        if 'time' in appt and appt['time']:
-            # Clean the text and ensure HH:MM format
-            time_str = appt['time'].strip()  # Remove any leading/trailing spaces
-            if len(time_str) >= 5 and ':' in time_str:  # Ensure it looks like HH:MM
-                booked_slots.append(time_str[:5])  # Take only HH:MM part if longer
-
-    # Generate all slots (8:00 to 15:00, 30-minute intervals) with status
     all_slots = []
     start_time = datetime.strptime('08:00', '%H:%M')
     end_time = datetime.strptime('15:00', '%H:%M')
@@ -287,12 +269,10 @@ def add_appointment(patient_id):
         })
         current_time += timedelta(minutes=30)
 
-    # Calculate calendar day statuses (for a month)
     selected_date_dt = datetime.strptime(selected_date, '%Y-%m-%d')
     start_of_month = selected_date_dt.replace(day=1)
     end_of_month = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
-
-    total_slots_per_day = len(all_slots)  # Total possible slots per day (8:00 to 15:00, 30-min intervals)
+    total_slots_per_day = len(all_slots)
     day_statuses = {}
 
     current_date = start_of_month
@@ -304,15 +284,7 @@ def add_appointment(patient_id):
             .eq('date', date_str)\
             .execute().data
         booked_count = len(day_appointments)
-
-        if booked_count == 0:
-            status = 'free'  # Green
-        elif booked_count < total_slots_per_day:
-            status = 'partially_booked'  # Yellow
-        else:
-            status = 'fully_booked'  # Red
-
-        day_statuses[date_str] = status
+        day_statuses[date_str] = 'free' if booked_count == 0 else 'partially_booked' if booked_count < total_slots_per_day else 'fully_booked'
         current_date += timedelta(days=1)
 
     return render_template('add_appointment.html', 
@@ -322,7 +294,40 @@ def add_appointment(patient_id):
                           all_slots=all_slots, 
                           selected_date=selected_date, 
                           doctor_id=doctor_id, 
-                          day_statuses=day_statuses)
+                          day_statuses=day_statuses,
+                          selected_hospital_id=selected_hospital_id)
+
+@app.route('/edit-patient/<int:patient_id>', methods=['GET', 'POST'])
+@login_required
+def edit_patient(patient_id):
+    if current_user.role != 'patient' or current_user.id != patient_id:
+        return "Access denied", 403
+
+    # Fetch the patient data
+    patient_response = supabase.table('patients').select('*').eq('id', patient_id).execute()
+    if not patient_response.data:
+        return "Patient not found", 404
+    patient = patient_response.data[0]
+
+    if request.method == 'POST':
+        # Get updated data from the form
+        updated_data = {
+            'first_name': request.form['first_name'],
+            'last_name': request.form['last_name'],
+            'dob': request.form['dob'],
+            'gender': request.form['gender'],
+            'blood_type': request.form['blood_type'],
+            'allergies': request.form['allergies'],
+            'email': request.form['email'],
+            'password': request.form['password']
+        }
+
+        # Update the patient record in Supabase
+        supabase.table('patients').update(updated_data).eq('id', patient_id).execute()
+        flash('Profile updated successfully')
+        return redirect(url_for('health_record'))
+
+    return render_template('edit_patient.html', patient=patient)
 
 if __name__ == '__main__':
     app.run(debug=True)

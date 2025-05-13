@@ -34,27 +34,29 @@
 
 {% block content %}
 <body>
-   
     <div class="container mt-5">
         <h1>Add Appointment</h1>
         <form method="POST" class="card p-4">
             <div class="mb-3">
-                <label class="form-label">Doctor:</label>
-                <select name="doctor_id" class="form-select" onchange="this.form.submit()" required>
-                    {% for doctor in doctors %}
-                    <option value="{{ doctor.id }}" {% if doctor.id|string == doctor_id %}selected{% endif %}>
-                        {{ doctor.name }} ({{ doctor.specialty }})
+                <label class="form-label">Hospital:</label>
+                <select name="hospital_id" id="hospital_id" class="form-select" required onchange="filterDoctors()">
+                    {% for hospital in hospitals %}
+                    <option value="{{ hospital.id }}" {% if hospital.id|string == selected_hospital_id %}selected{% endif %}>
+                        {{ hospital.name }}, {{ hospital.city }}
                     </option>
                     {% endfor %}
                 </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">Hospital:</label>
-                <select name="hospital_id" class="form-select" required>
-                    {% for hospital in hospitals %}
-                    <option value="{{ hospital.id }}">{{ hospital.name }}, {{ hospital.city }}</option>
+                <label class="form-label">Doctor:</label>
+                <select name="doctor_id" id="doctor_id" class="form-select" required>
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.id }}" data-hospital-id="{{ doctor.hospital_id }}" {% if doctor.id|string == doctor_id %}selected{% endif %}>
+                        {{ doctor.name }} ({{ doctor.specialty }})
+                    </option>
                     {% endfor %}
                 </select>
+                
             </div>
             <div class="mb-3">
                 <label class="form-label">Date:</label>
@@ -97,6 +99,48 @@
                 // No redirect, just update the hidden field
             }
         });
+
+        function filterDoctors() {
+            const hospitalId = document.getElementById('hospital_id').value;
+            const doctorSelect = document.getElementById('doctor_id');
+            const options = doctorSelect.options;
+            let visibleCount = 0;
+
+            for (let i = 0; i < options.length; i++) {
+                const optionHospitalId = options[i].getAttribute('data-hospital-id');
+                if (optionHospitalId === null) {
+                    console.error('Missing data-hospital-id for option:', options[i]);
+                    continue;
+                }
+                if (hospitalId === optionHospitalId) {
+                    options[i].style.display = '';
+                    visibleCount++;
+                } else {
+                    options[i].style.display = 'none';
+                }
+            }
+
+            // Select the first visible option if the current selection is hidden
+            const selectedDoctor = doctorSelect.value;
+            if (document.querySelector(`#doctor_id option[value="${selectedDoctor}"][style="display: none;"]`)) {
+                doctorSelect.selectedIndex = 0;
+                while (doctorSelect.options[doctorSelect.selectedIndex].style.display === 'none' && doctorSelect.selectedIndex < options.length - 1) {
+                    doctorSelect.selectedIndex++;
+                }
+            }
+
+            // Debugging: Log the selected hospital and visible doctors
+            console.log('Selected Hospital ID:', hospitalId);
+            console.log('Visible Doctors:', visibleCount);
+        }
+
+        // Trigger filter on page load to match initial hospital selection
+        window.onload = function() {
+            filterDoctors();
+            // Debugging: Log initial state
+            console.log('Initial Doctors:', document.getElementById('doctor_id').options.length);
+            console.log('Initial Selected Hospital:', document.getElementById('hospital_id').value);
+        };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
