@@ -203,6 +203,7 @@ def add_appointment(patient_id):
     hospitals = supabase.table('hospitals').select('id, name, city').execute().data
     return render_template('add_appointment.html', patient_id=patient_id, doctors=doctors, hospitals=hospitals)
 
+    """
 # Nova ruta za unos nalaza i označavanje pregleda kao završenog
 @app.route('/add-findings/<int:appointment_id>', methods=['GET', 'POST'])
 @login_required
@@ -229,7 +230,7 @@ def add_findings(appointment_id):
     appointment = appointment_response.data[0]
     return render_template('add_findings.html', appointment=appointment)
 
-    """
+    
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
 def add_appointment(patient_id):
