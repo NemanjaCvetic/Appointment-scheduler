@@ -27,6 +27,90 @@
             background-color: #007bff !important;
             color: white !important;
         }
+        /* Time slots styling */
+        .time-slots-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .time-slot {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .time-slot.available {
+            background-color: #28a745;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .time-slot.available:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .time-slot.booked {
+            background-color: #dc3545;
+            color: white;
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+        .time-slot.selected {
+            background-color: #007bff;
+            color: white;
+            border: 2px solid #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        /* Status indicators */
+        .status-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        .status-dot.free {
+            background-color: #28a745;
+        }
+        .status-dot.partially {
+            background-color: #ffc107;
+        }
+        .status-dot.fully {
+            background-color: #dc3545;
+        }
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        .loading.active {
+            display: flex;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
     </style>
 </head>
 
@@ -34,12 +118,19 @@
 
 {% block content %}
 <body>
+    <!-- Loading indicator -->
+    <div class="loading" id="loadingIndicator">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
     <div class="container mt-5">
         <h1>Add Appointment</h1>
-        <form method="POST" class="card p-4">
+        <form method="POST" class="card p-4" id="appointmentForm">
             <div class="mb-3">
                 <label class="form-label">Hospital:</label>
-                <select name="hospital_id" id="hospital_id" class="form-select" required onchange="filterDoctors()">
+                <select name="hospital_id" id="hospital_id" class="form-select" required onchange="handleHospitalChange()">
                     {% for hospital in hospitals %}
                     <option value="{{ hospital.id }}" {% if hospital.id|string == selected_hospital_id %}selected{% endif %}>
                         {{ hospital.name }}, {{ hospital.city }}
@@ -49,101 +140,199 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Doctor:</label>
-                <select name="doctor_id" id="doctor_id" class="form-select" required>
+                <select name="doctor_id" id="doctor_id" class="form-select" required onchange="handleDoctorChange()">
                     {% for doctor in doctors %}
-                    <option value="{{ doctor.id }}" data-hospital-id="{{ doctor.hospital_id }}" {% if doctor.id|string == doctor_id %}selected{% endif %}>
+                    <option value="{{ doctor.id }}" 
+                            data-hospital-id="{{ doctor.hospital_id }}" 
+                            {% if doctor.hospital_id|string != selected_hospital_id %}style="display: none;"{% endif %}
+                            {% if doctor.id|string == doctor_id %}selected{% endif %}>
                         {{ doctor.name }} ({{ doctor.specialty }})
                     </option>
                     {% endfor %}
                 </select>
-                
             </div>
             <div class="mb-3">
                 <label class="form-label">Date:</label>
                 <input type="hidden" name="date" id="selected-date" value="{{ selected_date }}">
+                
+                <!-- Status indicators for calendar -->
+                <div class="status-indicators">
+                    <div class="status-indicator">
+                        <div class="status-dot free"></div>
+                        <span>All available</span>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot partially"></div>
+                        <span>Partially booked</span>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot fully"></div>
+                        <span>Fully booked</span>
+                    </div>
+                </div>
+                
                 <div id="calendar"></div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Time:</label>
-                <select name="time" class="form-select" required>
+                <input type="hidden" name="time" id="selected-time" value="">
+                <div id="time-slots" class="time-slots-container">
                     {% for slot in all_slots %}
-                    <option value="{{ slot.time }}" 
-                            {% if slot.is_booked %}disabled style="background-color: #dc3545; color: white;"{% else %}style="background-color: #28a745; color: white;"{% endif %}>
-                        {{ slot.time }} {% if slot.is_booked %}(Booked){% endif %}
-                    </option>
+                    <div class="time-slot {% if slot.is_booked %}booked{% else %}available{% endif %}" 
+                         data-time="{{ slot.time }}" 
+                         onclick="{% if not slot.is_booked %}selectTimeSlot(this){% endif %}">
+                        {{ slot.time }}
+                    </div>
                     {% endfor %}
-                </select>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Reason:</label>
                 <textarea name="reason" class="form-control" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Schedule</button>
+            <button type="submit" class="btn btn-primary">Schedule Appointment</button>
         </form>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        const dayStatuses = {{ day_statuses | tojson }};
-        flatpickr("#calendar", {
-            inline: true,
-            minDate: "today",
-            defaultDate: "{{ selected_date }}",
-            onDayCreate: function(dObj, dStr, fp, dayElem) {
-                const dateStr = dayElem.dateObj.toISOString().split('T')[0];
-                if (dayStatuses[dateStr]) {
-                    dayElem.classList.add(dayStatuses[dateStr]);
+        // Global variables
+        let flatpickrCalendar;
+        let dayStatuses = {{ day_statuses | tojson }};
+        
+        // Initialize calendar
+        function initCalendar() {
+            flatpickrCalendar = flatpickr("#calendar", {
+                inline: true,
+                minDate: "today",
+                defaultDate: "{{ selected_date }}",
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    // Set color based on availability status
+                    const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+                    if (dayStatuses[dateStr]) {
+                        dayElem.classList.add(dayStatuses[dateStr]);
+                    }
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    document.getElementById('selected-date').value = dateStr;
+                    showLoading();
+                    
+                    // Reload the page with new date
+                    const doctorId = document.getElementById('doctor_id').value;
+                    const hospitalId = document.getElementById('hospital_id').value;
+                    
+                    console.log(`Changing date to: ${dateStr}, doctor: ${doctorId}, hospital: ${hospitalId}`);
+                    window.location.href = `?date=${dateStr}&doctor_id=${doctorId}&hospital_id=${hospitalId}`;
                 }
-            },
-            onChange: function(selectedDates, dateStr, instance) {
-                document.getElementById('selected-date').value = dateStr;
-                // No redirect, just update the hidden field
-            }
-        });
-
-        function filterDoctors() {
+            });
+        }
+        
+        // Handle hospital selection change
+        function handleHospitalChange() {
             const hospitalId = document.getElementById('hospital_id').value;
             const doctorSelect = document.getElementById('doctor_id');
             const options = doctorSelect.options;
-            let visibleCount = 0;
-
+            
+            let firstVisibleOptionIndex = -1;
+            let selectedHidden = true;
+            
+            // Show/hide doctors based on hospital
             for (let i = 0; i < options.length; i++) {
                 const optionHospitalId = options[i].getAttribute('data-hospital-id');
-                if (optionHospitalId === null) {
-                    console.error('Missing data-hospital-id for option:', options[i]);
-                    continue;
-                }
-                if (hospitalId === optionHospitalId) {
+                if (optionHospitalId === hospitalId) {
                     options[i].style.display = '';
-                    visibleCount++;
+                    if (firstVisibleOptionIndex === -1) {
+                        firstVisibleOptionIndex = i;
+                    }
+                    if (options[i].selected) {
+                        selectedHidden = false;
+                    }
                 } else {
                     options[i].style.display = 'none';
                 }
             }
-
-            // Select the first visible option if the current selection is hidden
-            const selectedDoctor = doctorSelect.value;
-            if (document.querySelector(`#doctor_id option[value="${selectedDoctor}"][style="display: none;"]`)) {
-                doctorSelect.selectedIndex = 0;
-                while (doctorSelect.options[doctorSelect.selectedIndex].style.display === 'none' && doctorSelect.selectedIndex < options.length - 1) {
-                    doctorSelect.selectedIndex++;
-                }
+            
+            // If current selection is hidden, select first visible option
+            if (selectedHidden && firstVisibleOptionIndex !== -1) {
+                doctorSelect.selectedIndex = firstVisibleOptionIndex;
             }
-
-            // Debugging: Log the selected hospital and visible doctors
-            console.log('Selected Hospital ID:', hospitalId);
-            console.log('Visible Doctors:', visibleCount);
+            
+            console.log(`Hospital changed to ${hospitalId}, first visible doctor: ${firstVisibleOptionIndex >= 0 ? options[firstVisibleOptionIndex].value : 'none'}`);
+            
+            // Reload page with new hospital and doctor
+            showLoading();
+            const doctorId = doctorSelect.value;
+            const selectedDate = document.getElementById('selected-date').value;
+            window.location.href = `?date=${selectedDate}&doctor_id=${doctorId}&hospital_id=${hospitalId}`;
         }
-
-        // Trigger filter on page load to match initial hospital selection
+        
+        // Handle doctor selection change
+        function handleDoctorChange() {
+            showLoading();
+            const doctorId = document.getElementById('doctor_id').value;
+            const hospitalId = document.getElementById('hospital_id').value;
+            const selectedDate = document.getElementById('selected-date').value;
+            
+            console.log(`Doctor changed to: ${doctorId}`);
+            window.location.href = `?date=${selectedDate}&doctor_id=${doctorId}&hospital_id=${hospitalId}`;
+        }
+        
+        // Select time slot
+        function selectTimeSlot(element) {
+            // Clear previous selection
+            document.querySelectorAll('.time-slot.selected').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            // Add selected class
+            element.classList.add('selected');
+            
+            // Update hidden input
+            document.getElementById('selected-time').value = element.getAttribute('data-time');
+            console.log(`Selected time: ${element.getAttribute('data-time')}`);
+        }
+        
+        // Show loading indicator
+        function showLoading() {
+            document.getElementById('loadingIndicator').classList.add('active');
+        }
+        
+        // Hide loading indicator
+        function hideLoading() {
+            document.getElementById('loadingIndicator').classList.remove('active');
+        }
+        
+        // Initialize everything on page load
         window.onload = function() {
-            filterDoctors();
-            // Debugging: Log initial state
-            console.log('Initial Doctors:', document.getElementById('doctor_id').options.length);
-            console.log('Initial Selected Hospital:', document.getElementById('hospital_id').value);
+            // Initialize calendar
+            initCalendar();
+            
+            // Auto-select first available time slot
+            const availableSlots = document.querySelectorAll('.time-slot.available');
+            if (availableSlots.length > 0) {
+                selectTimeSlot(availableSlots[0]);
+            }
+            
+            // Form validation
+            document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+                const selectedTime = document.getElementById('selected-time').value;
+                if (!selectedTime) {
+                    e.preventDefault();
+                    alert('Please select an appointment time');
+                    return false;
+                }
+                
+                showLoading();
+                return true;
+            });
+            
+            // Hide loading indicator
+            hideLoading();
+            
+            console.log('Calendar initialized with day statuses:', dayStatuses);
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 {% endblock %}
 </html>

@@ -228,40 +228,65 @@ def add_appointment(patient_id):
     doctors = supabase.table('doctors').select('id, name, specialty, hospital_id').execute().data
     hospitals = supabase.table('hospitals').select('id, name, city').execute().data
 
-    # No change: Sets initial hospital ID based on form or defaults to first hospital
-    selected_hospital_id = request.form.get('hospital_id', hospitals[0]['id'] if hospitals else None)
+    # Get selected hospital_id from request or default to first hospital
+    selected_hospital_id = request.args.get('hospital_id', str(hospitals[0]['id']) if hospitals else None)
+    
+    # Get selected date from request or default to today
+    selected_date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
+    
+    # Get selected doctor_id from request or filter based on hospital
+    doctor_id = request.args.get('doctor_id')
+    if not doctor_id:
+        # Find first doctor from the selected hospital
+        for doc in doctors:
+            if str(doc['hospital_id']) == selected_hospital_id:
+                doctor_id = str(doc['id'])
+                break
+        # If no doctor found for the hospital, use the first doctor
+        if not doctor_id and doctors:
+            doctor_id = str(doctors[0]['id'])
 
-    if request.method == 'POST' and 'doctor_id' in request.form:
+    if request.method == 'POST':
         data = {
             'patient_id': patient_id,
             'doctor_id': int(request.form['doctor_id']),
             'hospital_id': int(request.form['hospital_id']),
             'date': request.form['date'],
             'time': request.form['time'],
-            'reason': request.form['reason']
+            'reason': request.form['reason'],
+            'is_completed': False,
+            'findings': None
         }
         supabase.table('appointments').insert(data).execute()
+        flash('Appointment scheduled successfully')
         return redirect(url_for('health_record'))
 
-    # No change: Sets initial doctor ID based on selected hospital or defaults to first doctor
-    selected_date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
-    doctor_id = request.args.get('doctor_id', next((d['id'] for d in doctors if d['hospital_id'] == int(selected_hospital_id)), doctors[0]['id'] if doctors else None))
+    # Convert doctor_id to int for comparison with database values
+    try:
+        doctor_id_int = int(doctor_id) if doctor_id else None
+    except (ValueError, TypeError):
+        doctor_id_int = None
 
-    # Fetch booked appointments for the selected doctor and date
-    appointments = supabase.table('appointments')\
-        .select('time')\
-        .eq('doctor_id', doctor_id)\
-        .eq('date', selected_date)\
-        .execute().data
+    # Fetch ALL booked appointments for the selected doctor and date, regardless of patient
+    appointments = []
+    if doctor_id_int:
+        appointments = supabase.table('appointments')\
+            .select('time')\
+            .eq('doctor_id', doctor_id_int)\
+            .eq('date', selected_date)\
+            .execute().data
 
-    booked_slots = [appt['time'][:5] for appt in appointments if 'time' in appt and appt['time']]
+    # Get all booked time slots for this doctor (all patients)
+    booked_slots = [appt['time'] for appt in appointments if 'time' in appt and appt['time']]
+    
 
+    # Generate all possible time slots
     all_slots = []
     start_time = datetime.strptime('08:00', '%H:%M')
-    end_time = datetime.strptime('15:00', '%H:%M')
+    end_time = datetime.strptime('16:00', '%H:%M')
     current_time = start_time
 
-    while current_time <= end_time:
+    while current_time < end_time:
         time_str = current_time.strftime('%H:%M')
         all_slots.append({
             'time': time_str,
@@ -269,23 +294,46 @@ def add_appointment(patient_id):
         })
         current_time += timedelta(minutes=30)
 
-    selected_date_dt = datetime.strptime(selected_date, '%Y-%m-%d')
-    start_of_month = selected_date_dt.replace(day=1)
-    end_of_month = (start_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
-    total_slots_per_day = len(all_slots)
-    day_statuses = {}
+    # Calculate day statuses for calendar coloring
+    if doctor_id_int:
+        # Get the current month's date range
+        selected_date_dt = datetime.strptime(selected_date, '%Y-%m-%d')
+        start_of_month = selected_date_dt.replace(day=1)
+        next_month = (start_of_month.replace(day=28) + timedelta(days=4)).replace(day=1)
+        end_of_month = next_month - timedelta(days=1)
+        
+        total_slots_per_day = len(all_slots)
+        day_statuses = {}
 
-    current_date = start_of_month
-    while current_date <= end_of_month:
-        date_str = current_date.strftime('%Y-%m-%d')
-        day_appointments = supabase.table('appointments')\
-            .select('time')\
-            .eq('doctor_id', doctor_id)\
-            .eq('date', date_str)\
-            .execute().data
-        booked_count = len(day_appointments)
-        day_statuses[date_str] = 'free' if booked_count == 0 else 'partially_booked' if booked_count < total_slots_per_day else 'fully_booked'
-        current_date += timedelta(days=1)
+        # For each day in the month, check appointments status
+        current_date = start_of_month
+        while current_date <= end_of_month:
+            date_str = current_date.strftime('%Y-%m-%d')
+            
+            # Get all appointments for this doctor on this date (ALL patients)
+            day_appointments = supabase.table('appointments')\
+                .select('time')\
+                .eq('doctor_id', doctor_id_int)\
+                .eq('date', date_str)\
+                .execute().data
+            
+            booked_count = len(day_appointments)
+            
+            # Debug log
+            if booked_count > 0:
+                print(f"Date {date_str}: {booked_count} appointments found out of {total_slots_per_day} total slots")
+            
+            # Set status based on booking ratio
+            if booked_count == 0:
+                day_statuses[date_str] = 'free'
+            elif booked_count < total_slots_per_day:
+                day_statuses[date_str] = 'partially_booked'
+            else:
+                day_statuses[date_str] = 'fully_booked'
+                
+            current_date += timedelta(days=1)
+    else:
+        day_statuses = {}
 
     return render_template('add_appointment.html', 
                           patient_id=patient_id, 
