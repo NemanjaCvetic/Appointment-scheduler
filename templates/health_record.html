@@ -1,78 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
+    {%extends 'base.html' %}
+
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <title>Health Record</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            border: none;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        .patient-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .profile-details {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .profile-details p {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .profile-details strong {
+            color: #4e73df;
+        }
+        .btn-primary {
+            background: #4e73df;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #224abe;
+            transform: translateY(-2px);
+        }
+        .section-title {
+            font-weight: 600;
+            margin: 30px 0 20px 0;
+            color: #333;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #4e73df;
+        }
+        .appointment-card {
+            height: 100%;
+            border: none;
+        }
+        .appointment-header {
+            color: white;
+            padding: 15px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .pending {
+            background: linear-gradient(135deg, #f6c23e 0%, #e0a800 100%);
+        }
+        .completed {
+            background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+        }
+        .appointment-body {
+            padding: 20px;
+        }
+        .appointment-meta {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .appointment-reason {
+            font-weight: 500;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .appointment-details {
+            margin-bottom: 10px;
+        }
+        .appointment-footer {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        .icon-circle {
+            display: inline-flex;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background-color: rgba(78, 115, 223, 0.1);
+            color: #4e73df;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 
-{%extends 'base.html' %}
 
-{% block content %}
 <body>
-    <div class="container mt-5">
+    <div class="container py-5">
         {% if patient %}
-        <h1>Health Record: {{ patient.first_name }}  {{ patient.last_name }}</h1>
-        <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
-        <p><strong>Gender:</strong> {{ patient.gender }}</p>
-        <p><strong>Medical History:</strong> {{ patient.medical_conditions }}</p>
-        <p><strong>Blood type:</strong> {{ patient.blood_type }}</p>
-        <p><strong>Allergies:</strong> {{ patient.allergies }}</p>
-        <button class="btn btn-primary mb-3">
-            <a href="{{ url_for('edit_patient', patient_id=current_user.id) }}" style="color: white; text-decoration: none;">Edit Profile</a>
-        </button>
+        <div class="patient-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">{{ patient.first_name }} {{ patient.last_name }}</h1>
+                    <p class="mb-0">Health Record</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn btn-light">
+                        <a href="{{ url_for('edit_patient', patient_id=current_user.id) }}" class="text-decoration-none">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-details">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <p><span class="icon-circle"><i class="fas fa-calendar"></i></span><strong>Date of Birth:</strong> {{ patient.dob }}</p>
+                        <p><span class="icon-circle"><i class="fas fa-venus-mars"></i></span><strong>Gender:</strong> {{ patient.gender }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <p><span class="icon-circle"><i class="fas fa-tint"></i></span><strong>Blood Type:</strong> {{ patient.blood_type }}</p>
+                        <p><span class="icon-circle"><i class="fas fa-exclamation-triangle"></i></span><strong>Allergies:</strong> {{ patient.allergies }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p><span class="icon-circle"><i class="fas fa-file-medical"></i></span><strong>Medical History:</strong> {{ patient.medical_conditions }}</p>
+                </div>
+            </div>
+        </div>
         {% endif %}
-        <button class="btn btn-primary mb-3">
-            <a href="{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}" style="color: white; text-decoration: none;">Add appointment</a>
-        </button>
-    
-        <h2>Appointments</h2>
-        <table class="table">
-            <thead>
-                <tr>
+        
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="section-title">Appointments</h2>
+            <button class="btn btn-primary">
+                <a href="{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}" class="text-white text-decoration-none">
+                    <i class="fas fa-plus me-2"></i>New Appointment
+                </a>
+            </button>
+        </div>
+        
+        <div class="row">
+            {% for appointment in appointments %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card appointment-card">
+                    <div class="appointment-header {% if appointment.is_completed %}completed{% else %}pending{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                {% if current_user.role != 'doctor' %}
+                                {{ appointment.doctors.name }}
+                                {% else %}
+                                {{ appointment.patients.first_name }} {{ appointment.patients.last_name }}
+                                {% endif %}
+                            </h5>
+                            <span class="badge {% if appointment.is_completed %}bg-light text-dark{% else %}bg-warning text-dark{% endif %}">
+                                {{ 'Completed' if appointment.is_completed else 'Pending' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="appointment-body">
+                        <div class="appointment-meta">
+                            <i class="far fa-calendar-alt me-2"></i>{{ appointment.date }} at {{ appointment.time }}
+                        </div>
+                        <div class="appointment-reason">
+                           <p><strong>Reason:</strong> {{ appointment.reason }} </p>
+                        </div>
+                        <div class="appointment-details">
+                            {% if current_user.role != 'doctor' %}
+                            <p><i class="fas fa-user-md me-2"></i><strong>Specialty:</strong> {{ appointment.doctors.specialty }}</p>
+                            {% endif %}
+                            <p><i class="fas fa-hospital me-2"></i><strong>Location:</strong> {{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</p>
+                            {% if current_user.role != 'doctor' and appointment.findings %}
+                            <p><i class="fas fa-notes-medical me-2"></i><strong>Findings:</strong> {{ appointment.findings }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% if current_user.role == 'doctor' %}
-                    <th>Patient</th>
-                    {% else %}
-                    <th>Doctor</th>
+                    <div class="appointment-footer">
+                        <a href="{{ url_for('add_findings', appointment_id=appointment.id) }}" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-clipboard-list me-2"></i>Add Findings
+                        </a>
+                    </div>
                     {% endif %}
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Reason</th>
-                    <th>Hospital</th>
-                    {% if current_user.role != 'doctor' %}
-                    <th>Findings</th>
-                    <th>Status</th>
-                    {% endif %}
-                    {% if current_user.role == 'doctor' %}
-                    <th>Action</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for appointment in appointments %}
-                <tr>
-                    {% if current_user.role == 'doctor' %}
-                    <td>{{ appointment.patients.first_name }}  {{ appointment.patients.last_name }}</td>
-                    {% else %}
-                    <td>{{ appointment.doctors.name }} ({{ appointment.doctors.specialty }})</td>
-                    {% endif %}
-                    <td>{{ appointment.date }}</td>
-                    <td>{{ appointment.time }}</td>
-                    <td>{{ appointment.reason }}</td>
-                    <td>{{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</td>
-                    {% if current_user.role != 'doctor' %}
-                    <td>{{ appointment.findings or 'Not yet provided' }}</td>
-                    <td>{{ 'Completed' if appointment.is_completed else 'Pending' }}</td>
-                    {% endif %}
-                    {% if current_user.role == 'doctor' %}
-                    <td>
-                        <a href="{{ url_for('add_findings', appointment_id=appointment.id) }}" class="btn btn-sm btn-primary">Add Findings</a>
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if not appointments %}
+        <div class="text-center my-5 py-5">
+            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+            <h3>No appointments found</h3>
+            <p class="text-muted">Schedule your first appointment to get started</p>
+        </div>
+        {% endif %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
