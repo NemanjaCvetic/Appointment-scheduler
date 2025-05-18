@@ -111,6 +111,12 @@
             width: 3rem;
             height: 3rem;
         }
+        .flatpickr-disabled {
+    background-color: #e9ecef !important; /* Light gray background */
+    color: #6c757d !important; /* Dark gray text for readability */
+    cursor: not-allowed !important;
+    opacity: 0.5 !important; /* Slight transparency */
+}
     </style>
 </head>
 
@@ -201,32 +207,45 @@
         let dayStatuses = {{ day_statuses | tojson }};
         
         // Initialize calendar
-        function initCalendar() {
-            flatpickrCalendar = flatpickr("#calendar", {
-                inline: true,
-                minDate: "today",
-                defaultDate: "{{ selected_date }}",
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    // Set color based on availability status
-                    const dateStr = dayElem.dateObj.toISOString().split('T')[0];
-                    if (dayStatuses[dateStr]) {
-                        dayElem.classList.add(dayStatuses[dateStr]);
-                    }
-                },
-                onChange: function(selectedDates, dateStr, instance) {
-                    document.getElementById('selected-date').value = dateStr;
-                    showLoading();
-                    
-                    // Reload the page with new date
-                    const doctorId = document.getElementById('doctor_id').value;
-                    const hospitalId = document.getElementById('hospital_id').value;
-                    
-                    console.log(`Changing date to: ${dateStr}, doctor: ${doctorId}, hospital: ${hospitalId}`);
-                    window.location.href = `?date=${dateStr}&doctor_id=${doctorId}&hospital_id=${hospitalId}`;
-                }
-            });
+       // Initialize calendar
+function initCalendar() {
+    flatpickrCalendar = flatpickr("#calendar", {
+        inline: true,
+        minDate: "today", // Ensures no dates before today are selectable
+        defaultDate: "{{ selected_date }}" || new Date(), // Fallback to today if selected_date is invalid
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            // Format the date as YYYY-MM-DD in local timezone
+            const dateStr = dayElem.dateObj.getFullYear() + '-' + 
+                           String(dayElem.dateObj.getMonth() + 1).padStart(2, '0') + '-' + 
+                           String(dayElem.dateObj.getDate()).padStart(2, '0');
+            if (dayStatuses[dateStr]) {
+                dayElem.classList.add(dayStatuses[dateStr]);
+            }
+        },
+        disable: [
+            function(date) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Normalize to midnight for accurate comparison
+                
+                // Disable past dates and future weekends (Saturdays and Sundays)
+                const isPastDate = date < today && date.getTime() !== today.getTime();
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                return isPastDate || (isWeekend && date.getTime() !== today.getTime());
+            }
+        ],
+        onChange: function(selectedDates, dateStr, instance) {
+            document.getElementById('selected-date').value = dateStr;
+            showLoading();
+            
+            // Reload the page with new date
+            const doctorId = document.getElementById('doctor_id').value;
+            const hospitalId = document.getElementById('hospital_id').value;
+            
+            console.log(`Changing date to: ${dateStr}, doctor: ${doctorId}, hospital: ${hospitalId}`);
+            window.location.href = `?date=${dateStr}&doctor_id=${doctorId}&hospital_id=${hospitalId}`;
         }
-        
+    });
+}
         // Handle hospital selection change
         function handleHospitalChange() {
             const hospitalId = document.getElementById('hospital_id').value;
