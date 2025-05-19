@@ -89,11 +89,11 @@
                     <p><strong>Specialties:</strong> <span id="hospital-specialties"></span></p>
                     <p><strong>Doctors:</strong> <span id="hospital-doctors"></span></p>
                     {% if current_user.is_authenticated and current_user.role in ['doctor', 'admin', 'patient'] %}
-                    <a id="schedule-btn" href="#" class="btn schedule-btn">Schedule Appointment</a>
+                    <a id="schedule-btn" href="#" class="btn schedule-btn btn-lg">Schedule Appointment</a>
                     {% else %}
                     <p class="mt-4"><i class="fas fa-info-circle me-2"></i>Please log in to schedule an appointment.
                     </p>
-                    <a href="{{ url_for('login') }}" class="btn schedule-btn">Log In Now</a>
+                    <a href="{{ url_for('login') }}" class="btn schedule-btn btn-lg">Log In Now</a>
                     {% endif %}
                 </div>
             </div>
