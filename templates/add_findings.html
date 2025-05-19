@@ -14,12 +14,36 @@
     <div class="container mt-5">
         <h1>Add Findings for Appointment</h1>
         <div class="card p-4 mb-3">
-            <p><strong>Patient:</strong> {{ appointment.patients.name }}</p>
+            <p><strong>Patient:</strong> {{ appointment.patients.first_name }} {{ appointment.patients.last_name }}</p>
             <p><strong>Date:</strong> {{ appointment.date }}</p>
             <p><strong>Time:</strong> {{ appointment.time }}</p>
             <p><strong>Reason:</strong> {{ appointment.reason }}</p>
             <p><strong>Hospital:</strong> {{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</p>
         </div>
+
+        <div class="profile-details">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <p><span class="icon-circle"><i class="fas fa-calendar"></i></span><strong>Date of Birth:</strong> {{ appointment.patients.dob }}</p>
+                        <p><span class="icon-circle"><i class="fas fa-venus-mars"></i></span><strong>Gender:</strong> {{ appointment.patients.gender }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <p><span class="icon-circle"><i class="fas fa-tint"></i></span><strong>Blood Type:</strong> {{ appointment.patients.blood_type }}</p>
+                        <p><span class="icon-circle"><i class="fas fa-exclamation-triangle"></i></span><strong>Allergies:</strong> {{ appointment.patients.allergies }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p><span class="icon-circle"><i class="fas fa-file-medical"></i></span><strong>Medical History:</strong> {{ appointment.patients.medical_conditions }}</p>
+                </div>
+            </div>
+        </div>
+        
+        
         <form method="POST" class="card p-4">
             <div class="mb-3">
                 <label class="form-label">Findings:</label>
@@ -28,6 +52,30 @@
             <button type="submit" class="btn btn-primary">Submit and Mark as Completed</button>
         </form>
     </div>
+    <div class="row">
+            {% for patient_appointment in patient_appointments %}
+            {% if patient_appointment.is_completed==True %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card appointment-card">
+                    
+                    <div class="appointment-body">
+                        <div class="appointment-meta">
+                            <i class="far fa-calendar-alt me-2"></i>{{ patient_appointment.date }} at {{ patient_appointment.time }}
+                        </div>
+                        <div class="appointment-reason">
+                           <p><strong>Reason:</strong> {{ patient_appointment.reason }} </p>
+                        </div>
+                        <div class="appointment-findings">
+                           <p><strong>Fidings:</strong> {{ patient_appointment.findings }} </p>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

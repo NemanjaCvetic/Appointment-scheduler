@@ -213,13 +213,25 @@ def add_findings(appointment_id):
     
     # Pronalazimo appointment za prikaz informacija
     appointment_response = supabase.table('appointments')\
-        .select('id, patients(first_name), date, time, reason, hospitals(name, city)')\
+        .select('id, patient_id, patients(*), date, time, reason, hospitals(name, city)')\
         .eq('id', appointment_id)\
         .execute()
     if not appointment_response.data:
         return "Appointment not found", 404
     appointment = appointment_response.data[0]
-    return render_template('add_findings.html', appointment=appointment)
+    print(appointment)
+
+    patient_id = appointment['patient_id']
+    patient_appointments_response = supabase.table('appointments')\
+        .select('*')\
+        .eq('patient_id', patient_id)\
+        .order('date', desc=True)\
+        .execute()
+    patient_appointments = patient_appointments_response.data
+
+    
+    
+    return render_template('add_findings.html', appointment=appointment,patient_appointments=patient_appointments)
 
     
 @app.route('/add-appointment/<int:patient_id>', methods=['GET', 'POST'])
