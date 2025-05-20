@@ -138,6 +138,10 @@ def health_record():
         return "Data not found", 404
     return render_template('health_record.html', patient=patient, appointments=appointments)
 
+@app.route('/help', methods=['GET', 'POST'])
+def help():
+    return render_template('help.html')
+
 # Registracija korisnika
 @app.route('/register', methods=['GET', 'POST'])
 def add_patient():
@@ -388,6 +392,10 @@ def edit_patient(patient_id):
         return redirect(url_for('health_record'))
 
     return render_template('edit_patient.html', patient=patient)
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
