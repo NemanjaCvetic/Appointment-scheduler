@@ -1,1 +1,400 @@
-<h1>knds</h1>
+<!DOCTYPE html>
+<html lang="en">
+{%extends 'base.html' %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>DocScheduler - Help Center</title>
+    <style>
+        :root {
+            --primary-color: #2979ff;
+            --secondary-color: #0d47a1;
+            --accent-color: #e3f2fd;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            background-color: #f8f9fa;
+        }
+
+        .help-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .help-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .help-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #4e73df;
+        }
+
+        .help-item {
+            margin-bottom: 30px;
+        }
+
+        .help-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .help-item p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .help-item ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .help-item li {
+            margin-bottom: 8px;
+        }
+
+        .icon-circle {
+            display: inline-flex;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background-color: rgba(78, 115, 223, 0.1);
+            color: #4e73df;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--secondary-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question:hover {
+            color: var(--primary-color);
+        }
+
+        .faq-answer {
+            margin-top: 10px;
+            display: none;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: 6px;
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+
+        .help-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .quick-link {
+            background-color: var(--accent-color);
+            color: var(--secondary-color);
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .quick-link:hover {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .screenshot {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .help-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="help-header">
+            <h1 class="mb-2"><i class="fas fa-question-circle me-2"></i>DocScheduler Help Center</h1>
+            <p class="mb-0">Everything you need to know about using our platform</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="help-section">
+            <h2 class="section-title">Getting Started</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="help-item">
+                        <h4><span class="icon-circle"><i class="fas fa-user"></i></span>Creating an Account</h4>
+                        <p>To use DocScheduler's features, you'll need to create an account first:</p>
+                        <ol>
+                            <li>Click on "Log In" in the navigation bar</li>
+                            <li>Select "Register here" at the bottom of the login form</li>
+                            <li>Fill in your personal information</li>
+                            <li>Click "Register" to create your account</li>
+                        </ol>
+                        <p>Once registered, you'll have access to all patient features including appointment scheduling and health record management.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="help-item">
+                        <h4><span class="icon-circle"><i class="fas fa-sign-in-alt"></i></span>Logging In</h4>
+                        <p>If you already have an account:</p>
+                        <ol>
+                            <li>Click "Log In" in the top navigation bar</li>
+                            <li>Enter your email address and password</li>
+                            <li>Click the "Log In" button</li>
+                        </ol>
+                        <p>If you've forgotten your password, please contact support for assistance with resetting it.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finding Doctors Section -->
+        <div class="help-section">
+            <h2 class="section-title">Finding Doctors</h2>
+            <div class="help-item">
+                <h4><span class="icon-circle"><i class="fas fa-map-marker-alt"></i></span>Using the Interactive Map</h4>
+                <p>Our interactive map helps you find healthcare facilities near you:</p>
+                <ol>
+                    <li>Navigate to the homepage and scroll down to the map section</li>
+                    <li>Click on any marker to view details about that hospital</li>
+                    <li>View available specialties and doctors at that location</li>
+                    <li>Click "Schedule Appointment" to book with a doctor at that facility</li>
+                </ol>
+                <p>The map shows all partner hospitals in your region with real-time information about available specialists.</p>
+            </div>
+        </div>
+
+        <!-- Scheduling Appointments Section -->
+        <div class="help-section">
+            <h2 class="section-title">Scheduling Appointments</h2>
+            <div class="help-item">
+                <h4><span class="icon-circle"><i class="fas fa-calendar-plus"></i></span>How to Book an Appointment</h4>
+                <p>Booking an appointment is simple and straightforward:</p>
+                <ol>
+                    <li>Click on "Add appointment" in the navigation bar or click "Schedule Appointment" from the map</li>
+                    <li>Select your preferred hospital from the dropdown menu</li>
+                    <li>Choose a doctor from the available specialists</li>
+                    <li>Select a date on the calendar (green dates indicate full availability)</li>
+                    <li>Choose an available time slot (shown in green)</li>
+                    <li>Enter the reason for your visit</li>
+                    <li>Click "Schedule Appointment" to confirm</li>
+                </ol>
+                <p>The color-coding system on the calendar helps you quickly identify availability:</p>
+                <ul>
+                    <li><span style="color: #28a745;">◉</span> <strong>Green</strong>: All slots available</li>
+                    <li><span style="color: #ffc107;">◉</span> <strong>Yellow</strong>: Partially booked</li>
+                    <li><span style="color: #dc3545;">◉</span> <strong>Red</strong>: Fully booked</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Managing Health Records Section -->
+        <div class="help-section">
+            <h2 class="section-title">Managing Your Health Records</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="help-item">
+                        <h4><span class="icon-circle"><i class="fas fa-file-medical"></i></span>Viewing Your Health Record</h4>
+                        <p>Access your complete medical information:</p>
+                        <ol>
+                            <li>Click on "My Records" in the navigation menu</li>
+                            <li>View your personal information, medical history, and appointments</li>
+                            <li>Review past appointments and their findings</li>
+                        </ol>
+                        <p>Your health record includes personal details, allergies, medical conditions, and a comprehensive appointment history.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="help-item">
+                        <h4><span class="icon-circle"><i class="fas fa-edit"></i></span>Updating Your Profile</h4>
+                        <p>Keep your information current:</p>
+                        <ol>
+                            <li>Go to "My Records"</li>
+                            <li>Click "Edit Profile" in the top right corner</li>
+                            <li>Update your personal information, allergies, or other details</li>
+                            <li>Click "Save Changes" when finished</li>
+                        </ol>
+                        <p>Maintaining accurate information ensures your healthcare providers have the most current data for your care.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="help-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    How do I cancel or reschedule an appointment? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Currently, to cancel or reschedule an appointment, please contact the healthcare facility directly. We're working on adding self-service rescheduling features in the near future.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    What if I can't find my preferred doctor? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    If you can't find a specific doctor, they may not be registered in our system yet. You can filter doctors by specialty and hospital to find alternatives, or contact us to request adding a particular healthcare provider.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    Is my medical information secure? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes, we take data security very seriously. All your medical information is encrypted and stored securely. We comply with healthcare data protection regulations and only authorized personnel can access your information.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    Can I book appointments for family members? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Currently, each user needs their own account. We're working on a family management feature that will allow you to book and manage appointments for family members from a single account.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    What do I do if I miss my appointment? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    If you miss your appointment, please contact the healthcare facility directly to explain the situation and reschedule. Some facilities may have policies regarding missed appointments, including possible fees.
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Support Section -->
+        <div class="help-section">
+            <h2 class="section-title">Need More Help?</h2>
+            <div class="text-center">
+                <p>If you couldn't find the answer to your question or need additional assistance, our support team is here to help.</p>
+                <div class="row mt-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 py-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-envelope fa-3x mb-3" style="color: var(--primary-color);"></i>
+                                <h5>Email Support</h5>
+                                <p>info@docscheduler.com</p>
+                                <p class="small text-muted">Response within 24 hours</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 py-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-phone fa-3x mb-3" style="color: var(--primary-color);"></i>
+                                <h5>Phone Support</h5>
+                                <p>+386 699 945 257</p>
+                                <p class="small text-muted">Mon-Fri, 9am-5pm</p>
+                            </div>
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="help-footer">
+            <h4>Quick Links</h4>
+            <div class="quick-links">
+                <a href="{{ url_for('index') }}" class="quick-link"><i class="fas fa-home me-2"></i>Home</a>
+                <a href="{{ url_for('add_appointment', patient_id=(current_user.id if current_user.is_authenticated and current_user.role == 'patient' else 1)) }}" class="quick-link"><i class="fas fa-calendar-plus me-2"></i>New Appointment</a>
+                <a href="{{ url_for('health_record') }}" class="quick-link"><i class="fas fa-file-medical me-2"></i>My Records</a>
+                <a href="{{ url_for('index') }}#map-section" class="quick-link"><i class="fas fa-map-marker-alt me-2"></i>Find Doctors</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle FAQ answers
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            if (answer.classList.contains('active')) {
+                answer.classList.remove('active');
+                element.querySelector('i').classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                answer.classList.add('active');
+                element.querySelector('i').classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+    </script>
+</body>
+{% endblock %}
+</html>
