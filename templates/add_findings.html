@@ -1,83 +1,440 @@
 <!DOCTYPE html>
 <html lang="en">
+      {%extends 'base.html' %}
+
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <title>Add Findings</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+   
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --background-color: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .main-container {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin: 2rem auto;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            color: white;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(25%, -25%);
+        }
+
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .patient-info-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .content-section {
+            padding: 2rem;
+        }
+
+        .profile-details {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .profile-details h5 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .findings-form {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.875rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .history-section {
+            margin-top: 2rem;
+        }
+
+        .history-title {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: none;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .appointment-header {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .appointment-date {
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .appointment-body {
+            padding: 1.5rem;
+        }
+
+        .appointment-section {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .appointment-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-label {
+            font-weight: 600;
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .status-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem;
+                border-radius: 0;
+            }
+            
+            .header-section,
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .profile-details,
+            .findings-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 
-{%extends 'base.html' %}
-
-{% block content %}
 <body>
-
-    <div class="container mt-5">
-        <h1>Add Findings for Appointment</h1>
-        <div class="card p-4 mb-3">
-            <p><strong>Patient:</strong> {{ appointment.patients.first_name }} {{ appointment.patients.last_name }}</p>
-            <p><strong>Date:</strong> {{ appointment.date }}</p>
-            <p><strong>Time:</strong> {{ appointment.time }}</p>
-            <p><strong>Reason:</strong> {{ appointment.reason }}</p>
-            <p><strong>Hospital:</strong> {{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}</p>
-        </div>
-
-        <div class="profile-details">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <p><span class="icon-circle"><i class="fas fa-calendar"></i></span><strong>Date of Birth:</strong> {{ appointment.patients.dob }}</p>
-                        <p><span class="icon-circle"><i class="fas fa-venus-mars"></i></span><strong>Gender:</strong> {{ appointment.patients.gender }}</p>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <h1 class="header-title">
+                <i class="fas fa-stethoscope"></i>
+                Add Medical Findings
+            </h1>
+            
+            <div class="patient-info-card">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <strong>Patient:</strong> {{ appointment.patients.first_name }} {{ appointment.patients.last_name }}
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <p><span class="icon-circle"><i class="fas fa-tint"></i></span><strong>Blood Type:</strong> {{ appointment.patients.blood_type }}</p>
-                        <p><span class="icon-circle"><i class="fas fa-exclamation-triangle"></i></span><strong>Allergies:</strong> {{ appointment.patients.allergies }}</p>
+                    <div class="col-md-3">
+                        <strong>Date:</strong> {{ appointment.date }}
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <p><span class="icon-circle"><i class="fas fa-file-medical"></i></span><strong>Medical History:</strong> {{ appointment.patients.medical_conditions }}</p>
+                    <div class="col-md-3">
+                        <strong>Time:</strong> {{ appointment.time }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Hospital:</strong> {{ appointment.hospitals.name }}, {{ appointment.hospitals.city }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Reason:</strong> {{ appointment.reason }}
+                    </div>
                 </div>
             </div>
         </div>
-        
-        
-        <form method="POST" class="card p-4">
-            <div class="mb-3">
-                <label class="form-label">Findings:</label>
-                <textarea name="findings" class="form-control" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit and Mark as Completed</button>
-        </form>
-    </div>
-    <div class="row">
-            {% for patient_appointment in patient_appointments %}
-            {% if patient_appointment.is_completed==True %}
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card appointment-card">
-                    
-                    <div class="appointment-body">
-                        <div class="appointment-meta">
-                            <i class="far fa-calendar-alt me-2"></i>{{ patient_appointment.date }} at {{ patient_appointment.time }}
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <!-- Patient Details -->
+            <div class="profile-details">
+                <h5>
+                    <i class="fas fa-user-md"></i>
+                    Patient Information
+                </h5>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="icon-circle">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div>
+                                <div class="section-label">Date of Birth</div>
+                                <div class="section-content">{{ appointment.patients.dob }}</div>
+                            </div>
                         </div>
-                        <div class="appointment-reason">
-                           <p><strong>Reason:</strong> {{ patient_appointment.reason }} </p>
-                        </div>
-                        <div class="appointment-findings">
-                           <p><strong>Fidings:</strong> {{ patient_appointment.findings }} </p>
-                        </div>
-                        
                     </div>
                     
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="icon-circle">
+                                <i class="fas fa-venus-mars"></i>
+                            </div>
+                            <div>
+                                <div class="section-label">Gender</div>
+                                <div class="section-content">{{ appointment.patients.gender }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="icon-circle">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div>
+                                <div class="section-label">Blood Type</div>
+                                <div class="section-content">{{ appointment.patients.blood_type }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <div class="icon-circle">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <div class="section-label">Allergies</div>
+                                <div class="section-content">{{ appointment.patients.allergies }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="info-item">
+                            <div class="icon-circle">
+                                <i class="fas fa-file-medical"></i>
+                            </div>
+                            <div>
+                                <div class="section-label">Medical History</div>
+                                <div class="section-content">{{ appointment.patients.medical_conditions }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Findings Form -->
+            <form method="POST" class="findings-form">
+                <label class="form-label">
+                    <i class="fas fa-clipboard-list"></i>
+                    Clinical Findings & Observations
+                </label>
+                <textarea 
+                    name="findings" 
+                    class="form-control" 
+                    placeholder="Enter detailed findings, observations, diagnosis, and treatment recommendations..."
+                    required
+                ></textarea>
+                
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Submit Findings & Mark Complete
+                    </button>
+                </div>
+            </form>
+
+            <!-- Previous Appointments History -->
+            {% if patient_appointments %}
+            <div class="history-section">
+                <h4 class="history-title">
+                    <i class="fas fa-history"></i>
+                    Previous Completed Appointments
+                </h4>
+                
+                <div class="row">
+                    {% for patient_appointment in patient_appointments %}
+                    {% if patient_appointment.is_completed==True %}
+                    <div class="col-lg-6 col-md-12">
+                        <div class="appointment-card">
+                            <div class="appointment-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="appointment-date">
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ patient_appointment.date }} at {{ patient_appointment.time }}
+                                    </div>
+                                    <span class="status-badge">Completed</span>
+                                </div>
+                            </div>
+                            
+                            <div class="appointment-body">
+                                <div class="appointment-section">
+                                    <div class="section-label">Reason for Visit</div>
+                                    <div class="section-content">{{ patient_appointment.reason }}</div>
+                                </div>
+                                
+                                <div class="appointment-section">
+                                    <div class="section-label">Clinical Findings</div>
+                                    <div class="section-content">{{ patient_appointment.findings }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
             {% endif %}
-            {% endfor %}
         </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 {% endblock %}
 </html>
