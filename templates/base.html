@@ -64,9 +64,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('index') }}#map-section">Find Doctors</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('help') }}">Help</a>
-                    </li>
+                   
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('health_record') }}">My Records</a>
@@ -88,6 +86,9 @@
                     </li>
                     
                     {% endif %}
+                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('help') }}">Help</a>
+                    </li>
                 </ul>
             </div>
         </div>

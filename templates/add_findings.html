@@ -19,7 +19,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+           
             min-height: 100vh;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
@@ -41,17 +41,7 @@
             overflow: hidden;
         }
 
-        .header-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            transform: translate(25%, -25%);
-        }
+       
 
         .header-title {
             font-size: 2rem;
@@ -69,6 +59,7 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin-top: 1rem;
+            font-size: 1.2rem;
         }
 
         .content-section {
@@ -81,7 +72,7 @@
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: var(--card-shadow);
-            border-left: 4px solid var(--primary-color);
+            
         }
 
         .profile-details h5 {
@@ -127,6 +118,7 @@
             padding: 2rem;
             box-shadow: var(--card-shadow);
             margin-bottom: 2rem;
+            
         }
 
         .form-label {
@@ -136,6 +128,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 1.2rem;
         }
 
         .form-control {
@@ -382,7 +375,7 @@
                     required
                 ></textarea>
                 
-                <div class="d-flex justify-content-end mt-3">
+                <div class="d-flex justify-content-center mt-3">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-check-circle me-2"></i>
                         Submit Findings & Mark Complete
